@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.fund.FundProductInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.fund.FundProductInfo" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="exchange_id" property="exchangeId" jdbcType="BIGINT" />
+    <result column="fund_id" property="fundId" jdbcType="BIGINT" />
+    <result column="fund_name" property="fundName" jdbcType="VARCHAR" />
+    <!--<result column="strategy_id" property="strategyId" jdbcType="INTEGER" />-->
+    <result column="subscripe_rate" property="subscripeRate" jdbcType="DECIMAL" />
+    <!--<result column="invest_target" property="investTarget" jdbcType="TINYINT" />-->
+    <result column="dc_code" property="dcCode" jdbcType="VARCHAR" />
+    <result column="expect_scale" property="expectScale" jdbcType="DECIMAL" />
+    <result column="expect_profit" property="expectProfit" jdbcType="DECIMAL" />
+    <result column="min_buy_num" property="minBuyNum" jdbcType="DECIMAL" />
+    <result column="actual_scale" property="actualScale" jdbcType="DECIMAL" />
+    <result column="proportion" property="proportion" jdbcType="DECIMAL" />
+    <result column="over_range" property="overRange" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <!--<result column="manager_id" property="managerId" jdbcType="BIGINT" />-->
+    <result column="publish_time" property="publishTime" jdbcType="TIMESTAMP" />
+    <result column="buy_starttime" property="buyStarttime" jdbcType="TIMESTAMP" />
+    <result column="buy_endtime" property="buyEndtime" jdbcType="TIMESTAMP" />
+    <result column="cycle_starttime" property="cycleStarttime" jdbcType="TIMESTAMP" />
+    <result column="cycle_endtime" property="cycleEndtime" jdbcType="TIMESTAMP" />
+    <result column="run_starttime" property="runStarttime" jdbcType="TIMESTAMP" />
+    <result column="run_endtime" property="runEndtime" jdbcType="TIMESTAMP" />
+    <result column="clear_time" property="clearTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="enable" property="enable" jdbcType="TINYINT" />
+    <result column="curr_profilt" property="currProfilt"/>
+    <result column="strategyType" property="strategyType"/>
+    <association property="strategy" column="strategy_id" javaType="com.github.wxiaoqi.security.common.entity.fund.FundStrategy"
+                 select="com.github.wxiaoqi.security.common.mapper.fund.FundStrategyMapper.selectByPrimaryKey">
+    </association>
+    <association property="manageInfo" column="manager_id" javaType="com.github.wxiaoqi.security.common.entity.fund.FundManageInfo"
+                 select="com.github.wxiaoqi.security.common.mapper.fund.FundManageInfoMapper.selectByPrimaryKey">
+    </association>
+  </resultMap>
+
+
+  <!--<resultMap id="BaseResultMap1" type="com.github.wxiaoqi.security.common.entity.fund.FundProductInfo" >-->
+    <!--&lt;!&ndash;-->
+      <!--WARNING - @mbg.generated-->
+    <!--&ndash;&gt;-->
+    <!--<id column="id" property="id" jdbcType="BIGINT" />-->
+    <!--<result column="exchange_id" property="exchangeId" jdbcType="BIGINT" />-->
+    <!--<result column="fund_id" property="fundId" jdbcType="BIGINT" />-->
+    <!--<result column="fund_name" property="fundName" jdbcType="VARCHAR" />-->
+    <!--&lt;!&ndash;<result column="strategy_id" property="strategyId" jdbcType="INTEGER" />&ndash;&gt;-->
+    <!--<result column="subscripe_rate" property="subscripeRate" jdbcType="DECIMAL" />-->
+    <!--&lt;!&ndash;<result column="invest_target" property="investTarget" jdbcType="TINYINT" />&ndash;&gt;-->
+    <!--<result column="dc_code" property="dcCode" jdbcType="VARCHAR" />-->
+    <!--<result column="expect_scale" property="expectScale" jdbcType="DECIMAL" />-->
+    <!--<result column="expect_profit" property="expectProfit" jdbcType="DECIMAL" />-->
+    <!--<result column="min_buy_num" property="minBuyNum" jdbcType="DECIMAL" />-->
+    <!--<result column="actual_scale" property="actualScale" jdbcType="DECIMAL" />-->
+    <!--<result column="proportion" property="proportion" jdbcType="DECIMAL" />-->
+    <!--<result column="over_range" property="overRange" jdbcType="TINYINT" />-->
+    <!--<result column="status" property="status" jdbcType="TINYINT" />-->
+    <!--&lt;!&ndash;<result column="manager_id" property="managerId" jdbcType="BIGINT" />&ndash;&gt;-->
+    <!--<result column="publish_time" property="publishTime" jdbcType="TIMESTAMP" />-->
+    <!--<result column="buy_starttime" property="buyStarttime" jdbcType="TIMESTAMP" />-->
+    <!--<result column="buy_endtime" property="buyEndtime" jdbcType="TIMESTAMP" />-->
+    <!--<result column="cycle_starttime" property="cycleStarttime" jdbcType="TIMESTAMP" />-->
+    <!--<result column="cycle_endtime" property="cycleEndtime" jdbcType="TIMESTAMP" />-->
+    <!--<result column="run_starttime" property="runStarttime" jdbcType="TIMESTAMP" />-->
+    <!--<result column="run_endtime" property="runEndtime" jdbcType="TIMESTAMP" />-->
+    <!--<result column="clear_time" property="clearTime" jdbcType="TIMESTAMP" />-->
+    <!--<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />-->
+    <!--<result column="enable" property="enable" jdbcType="TINYINT" />-->
+
+    <!--<association property="strategy" javaType="com.github.wxiaoqi.security.common.entity.fund.FundStrategy">-->
+    <!--</association>-->
+    <!--<association property="manageInfo" javaType="com.github.wxiaoqi.security.common.entity.fund.FundManageInfo">-->
+    <!--</association>-->
+  <!--</resultMap>-->
+
+  <select id="selectUnionPage"  resultMap="BaseResultMap">
+		select p.* from fund_product_info p
+		 <where>
+           <if test="cm.id!=null and cm.id !=''">
+             and  p.id = #{cm.id}
+           </if>
+           <if test="cm.exchangeId!=null and cm.exchangeId !=''">
+             and  p.exchange_id = #{cm.exchangeId}
+           </if>
+           <if test="cm.fundId!=null and cm.fundId !=''">
+             and  p.fund_id = #{cm.fundId}
+           </if>
+           <if test="cm.enable!=null and cm.enable !=''">
+             and  p.enable = #{cm.enable}
+           </if>
+           <if test="cm.orderBy!=null and cm.orderBy !=''">
+             order by #{cm.orderBy}
+           </if>
+         </where>
+
+	</select>
+
+  <!--更新基金账户可用余额-->
+  <update id="updateActualScale"  parameterType="java.util.Map">
+			update fund_product_info set actual_scale = actual_scale + #{cm.amount}
+			  where fund_id=#{cm.id};
+
+	</update>
+  <!-- 记录加行锁 -->
+  <select id="selectIdForUpdate" parameterType="java.lang.Long" resultMap="BaseResultMap">
+			select * from fund_product_info   where id=#{id} for update
+	</select>
+  <select id="selectFundIdForUpdate" parameterType="java.lang.Long" resultMap="BaseResultMap">
+			select * from fund_product_info   where fund_id=#{id} for update
+	</select>
+
+  <!-- 后台查询列表数据 -->
+  <select id="selectCustomPage" resultMap="BaseResultMap">
+    SELECT DISTINCT
+    fp.*, fppi.curr_profilt,
+    fs.strategy_type AS strategyType
+    FROM
+    fund_product_info AS fp
+    LEFT JOIN fund_product_profilt_info AS fppi ON fp.fund_id = fppi.fund_id
+    LEFT JOIN fund_strategy AS fs ON fp.strategy_id = fs.id
+    <where>
+      <if test="cm.id != null and cm.id != ''">
+        and fp.id=#{cm.id}
+      </if>
+      <if test="cm.exchangeId!=null and cm.exchangeId !=''">
+        and fp.exchange_id = #{cm.exchangeId}
+      </if>
+      <if test="cm.fund_id != null and cm.fund_id != ''">
+        and fp.fund_id=#{cm.fundId}
+      </if>
+      <if test="cm.fundName != null and cm.fundName != ''">
+        and fp.fund_name like CONCAT('%',#{cm.fundName},'%')
+      </if>
+      <if test="cm.publishTime != null and cm.publishTime != ''">
+        and fp.publish_time=#{cm.publishTime}
+      </if>
+      <if test="cm.buyStarttime != null and cm.buyStarttime != ''">
+        and fp.buy_starttime=#{cm.buyStarttime}
+      </if>
+      <if test="cm.buyEndtime != null and cm.buyEndtime != ''">
+        and fp.buy_endtime=#{cm.buyEndtime}
+      </if>
+      <if test="cm.cycleStarttime != null and cm.cycleStarttime != ''">
+        and fp.cycle_starttime=#{cm.cycleStarttime}
+      </if>
+      <if test="cm.cycleEndtime != null and cm.cycleEndtime != ''">
+        and fp.cycle_endtime=#{cm.cycleEndtime}
+      </if>
+      <if test="cm.clearTime != null and cm.clearTime != ''">
+        and fp.clear_time=#{cm.clearTime}
+      </if>
+      <if test="cm.status != null and cm.status != ''">
+        and fp.status=#{cm.status}
+      </if>
+      <if test="cm.statusArr != null and cm.statusArr !=''">
+        and status in
+        <foreach collection="cm.statusArr" index="index" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="cm.enable != null and cm.enable != ''">
+        and fp.enable=#{cm.enable}
+      </if>
+      <if test="cm.keyword != null and cm.keyword != ''">
+        and ( fp.fund_id like CONCAT('%',#{cm.keyword},'%') or fp.fund_name like CONCAT('%',#{cm.keyword},'%') )
+      </if>
+    </where>
+    order by fp.publish_time DESC
+  </select>
+
+</mapper>

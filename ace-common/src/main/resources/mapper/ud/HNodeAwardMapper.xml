@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.ud.HNodeAwardMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.ud.HNodeAward" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"  />
+    <result column="base_profit_rate" property="baseProfitRate"  />
+    <result column="child_num" property="childNum" />
+    <result column="rate" property="rate"  />
+    <result column="global_rate" property="globalRate"  />
+    <result column="child_invest" property="childInvest"  />
+    <result column="remark" property="remark"  />
+    <result column="exch_id" property="exchId"  />
+    <result column="exchName" property="exchName"  />
+    <result column="symbol" property="symbol"  />
+    <result column="crt_time" property="crtTime"  />
+    <result column="crt_name" property="crtName"  />
+    <result column="upd_time" property="updTime"  />
+    <result column="upd_name" property="updName"  />
+  </resultMap>
+
+  <select id="selectListAll" resultMap="BaseResultMap">
+    SELECT * from h_node_award  ORDER BY exch_Id, child_invest
+  </select>
+
+  <select id="selectCustomPage" resultMap="BaseResultMap">
+    SELECT hna.*,wei.white_name as exchName FROM h_node_award as hna LEFT JOIN white_exch_info as wei on hna.exch_id =wei.id
+    <where>
+      <if test="cm.remark!=null and cm.remark !=''">
+        and hna.remark =#{cm.remark}
+      </if>
+      <if test="cm.exchId !=null and cm.exchId !=''">
+        and hna.exch_id =#{cm.exchId}
+      </if>
+    </where>
+  </select>
+
+
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.lock.UserSymbolLockMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.lock.UserSymbolLock">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="symbol" property="symbol"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="freed_amount" property="freedAmount"/>
+        <result column="freed_time" property="freedTime"/>
+        <result column="is_freed" property="isFreed"/>
+        <result column="freed_scale" property="freedScale"/>
+        <result column="total_time" property="totalTime"/>
+        <result column="has_detail" property="hasDetail"/>
+        <result column="create_time" property="createTime"/>
+        <result column="freed_cycle" property="freedCycle"/>
+        <result column="version" property="version"/>
+        <result column="user_name" property="frontUser.userName"/>
+        <result column="email" property="frontUser.email"/>
+        <result column="mobile" property="frontUser.mobile"/>
+    </resultMap>
+    <select id="getLockList" resultMap="BaseResultMap">
+        SELECT usl.* FROM user_symbol_lock AS usl
+        LEFT JOIN front_user AS fu ON fu.id =usl.user_id
+        LEFT JOIN front_user_info as fui on fui.user_id=usl.user_id
+        <where>
+            <if test="symbol !=null and symbol !=''">
+                and usl.symbol =#{symbol} and usl.has_detail =#{hasDetail}
+            </if>
+            <if test="exchId !=null and exchId!=''">
+                and fui.exchange_id =#{exchId}
+            </if>
+
+        </where>
+    </select>
+
+
+    <select id="selectCustomPage" resultMap="BaseResultMap">
+        SELECT usl.* ,
+        fu.user_name as user_name,
+        fu.email as email,
+        fu.mobile as mobile
+        FROM user_symbol_lock AS usl
+        LEFT JOIN front_user AS fu ON fu.id =usl.user_id
+        LEFT JOIN front_user_info as fui on fui.user_id=usl.user_id
+        <where>
+            <if test="cm.isFreed !=null and cm.isFreed !=''">
+                and usl.is_freed =#{cm.isFreed}
+            </if>
+            <if test="cm.symbol !=null and cm.symbol !=''">
+                and usl.symbol =#{cm.symbol}
+            </if>
+            <if test="cm.keyword != null and cm.keyword !='' ">
+                and (fu.email like CONCAT('%',#{cm.keyword},'%')
+                or fu.user_name like CONCAT('%',#{cm.keyword},'%')
+                or fu.mobile like CONCAT('%',#{cm.keyword},'%') )
+            </if>
+            <if test="cm.exchangeId !=null and cm.exchangeId !=''">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+        </where>
+
+    </select>
+
+</mapper>

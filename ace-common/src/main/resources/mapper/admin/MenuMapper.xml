@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.MenuMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.Menu">
+        <!--
+          WARNING - @mbggenerated
+        -->
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="title" property="title"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="href" property="href"/>
+        <result column="icon" property="icon"/>
+        <result column="type" property="type"/>
+        <result column="description" property="description"/>
+        <result column="crt_time" property="crtTime"/>
+        <result column="crt_name" property="crtName"/>
+        <result column="upd_time" property="updTime"/>
+        <result column="upd_name" property="updName"/>
+        <result column="attr1" property="attr1"/>
+        <result column="path" property="path"/>
+        <result column="languageTitle" property="languageTitle"/>
+    </resultMap>
+    <select id="selectListByLanguage" resultMap="BaseResultMap">
+        SELECT bm.* , bmt.title as languageTitle from base_menu as bm INNER JOIN base_menu_title as bmt on bm.id=bmt.menu_id
+        <where>
+            <if test="cm.language!=null and cm.language!=''">
+                and bmt.language_type =#{cm.language}
+            </if>
+            <if test="cm.title!=null and cm.title !=''">
+                and bm.title=#{cm.title}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMenuByAuthorityId" resultMap="BaseResultMap">
+        select t.* from base_resource_authority ra
+        inner join base_menu t
+        on ra.resource_id = t.id
+        and ra.authority_id = #{authorityId}
+        and ra.authority_type = #{authorityType}
+        and ra.resource_type = 'menu'
+    </select>
+
+    <select id="selectAuthorityMenuByUserIdAndLanguage" resultMap="BaseResultMap">
+        select distinct t.* , bmt.title as languageTitle from base_resource_authority ra  inner join base_menu t  on ra.resource_id = t.id
+        INNER JOIN base_menu_title as bmt on t.id=bmt.menu_id
+        and ra.authority_id in ( select group_id from base_group_leader where user_id = #{userId}  )
+        and ra.authority_type = 'group'
+        and ra.resource_type = 'menu'
+        and bmt.language_type =#{language}
+        order by t.id
+    </select>
+
+    <select id="selectAuthorityMenuByUserId" resultMap="BaseResultMap">
+        select distinct t.*  from base_resource_authority ra  inner join base_menu t  on ra.resource_id = t.id
+        and ra.authority_id in ( select group_id from base_group_leader where user_id = #{userId}  )
+        and ra.authority_type = 'group'
+        and ra.resource_type = 'menu'
+        order by t.id
+    </select>
+
+    <select id="selectAuthoritySystemByUserId" resultMap="BaseResultMap">
+        select distinct t.* from base_resource_authority ra
+        inner join base_menu t
+        on ra.resource_id = t.id
+        and ra.authority_id in (
+        select group_id from base_group_member where user_id = #{userId}
+        union select group_id from base_group_leader where user_id = #{userId}
+        )
+        and ra.authority_type = 'group'
+        and ra.resource_type = 'menu'
+        where t.parent_id = -1
+    </select>
+</mapper>

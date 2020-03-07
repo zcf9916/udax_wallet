@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.ifr.IfrPayOrderMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.ifr.IfrPayOrder" >
+    <id column="id" property="id"  />
+    <result column="order_no" property="orderNo" />
+    <result column="campaign_id" property="campaignId" />
+    <result column="referral_id" property="referralId" />
+    <result column="user_id" property="userId"  />
+    <result column="country" property="country" />
+    <result column="currency" property="currency" />
+    <result column="units" property="units"  />
+    <result column="amount" property="amount" />
+    <result column="period" property="period"  />
+    <result column="pay_status" property="payStatus"  />
+    <result column="create_time" property="createTime"  />
+    <result column="update_time" property="updateTime"  />
+  </resultMap>
+
+
+
+  <resultMap id="BaseResultMap2" type="com.github.wxiaoqi.security.common.entity.ifr.IfrPayOrder" >
+    <id column="id" property="id"  />
+    <result column="order_no" property="orderNo" />
+    <result column="campaign_id" property="campaignId" />
+    <result column="referral_id" property="referralId" />
+    <result column="user_id" property="userId"  />
+    <result column="country" property="country" />
+    <result column="currency" property="currency" />
+    <result column="units" property="units"  />
+    <result column="amount" property="amount" />
+    <result column="period" property="period"  />
+    <result column="pay_status" property="payStatus"  />
+    <result column="create_time" property="createTime"  />
+    <result column="update_time" property="updateTime"  />
+    <association property="frontUser" column="user_id"
+                 javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                 select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+  </resultMap>
+
+  <select id="selectCustomPage" resultMap="BaseResultMap2">
+    select  * from ifr_pay_order as ipo left join  front_user as fu on fu.id =ipo.user_id
+    <where>
+      <if test="cm.currency !=null and cm.currency!=''">
+        and ipo.currency =#{cm.currency}
+      </if>
+      <if test="cm.campaignId !=null and cm.campaignId !=''">
+        and ipo.campaign_Id =#{cm.campaignId}
+      </if>
+      <if test="cm.orderNo !=null and cm.orderNo !=''">
+        and ipo.order_no =#{cm.orderNo}
+      </if>
+      <if test="cm.payStatus!=null and cm.payStatus !=''">
+        and ipo.pay_status =#{cm.payStatus}
+      </if>
+      <if test="cm.period !=null and cm.period !=''">
+        and ipo.period=#{cm.period}
+      </if>
+      <if test="cm.keyword != null and cm.keyword !='' ">
+        and (fu.email like CONCAT('%',#{cm.keyword},'%')
+        or fu.user_name like CONCAT('%',#{cm.keyword},'%')
+        or fu.mobile like CONCAT('%',#{cm.keyword},'%')  )
+      </if>
+    </where>
+    ORDER BY ipo.create_time  DESC
+  </select>
+</mapper>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.merchant.MchTradeDetailMapper">
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.merchant.MchTradeDetail">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"  />
+    <result column="wallet_order_no" property="walletOrderNo"  />
+    <result column="mch_order_no" property="mchOrderNo"  />
+    <result column="mch_no" property="mchNo"  />
+    <result column="mch_id" property="mchId"  />
+    <result column="user_id" property="userId"  />
+    <result column="mch_user_id" property="mchUserId"  />
+    <result column="symbol" property="symbol"  />
+    <result column="amount" property="amount" />
+    <result column="refund_amount" property="refundAmount" />
+    <result column="charge_symbol" property="chargeSymbol"  />
+    <result column="charge_amount" property="chargeAmount" />
+    <result column="body" property="body"  />
+    <result column="ip" property="ip"  />
+    <result column="actual_ip" property="actualIp"  />
+    <result column="trade_type" property="tradeType"  />
+    <result column="status" property="status" />
+    <result column="order_time" property="orderTime" />
+    <result column="expire_time" property="expireTime" />
+    <result column="update_time" property="updateTime" />
+    <result column="notify_url" property="notifyUrl"  />
+    <result column="nonce_str" property="nonceStr"  />
+      <result column="settle_status" property="settleStatus"  />
+      <result column="settle_time" property="settleTime"  />
+<collection property="tokenList" ofType="com.github.wxiaoqi.security.common.entity.merchant.MchPayToken" javaType="list">
+			    <result column="detail_id" property="detailId" />
+			    <result column="symbol" property="symbol" />
+			    <result column="amount" property="amount"/>
+            </collection>
+
+  </resultMap>
+
+    <resultMap id="BaseResultMap2" type="com.github.wxiaoqi.security.common.entity.merchant.MchTradeDetail">
+        <id column="id" property="id"  />
+        <result column="wallet_order_no" property="walletOrderNo"  />
+        <result column="mch_order_no" property="mchOrderNo"  />
+        <result column="mch_no" property="mchNo"  />
+        <result column="mch_id" property="mchId"  />
+        <result column="user_id" property="userId"  />
+        <result column="mch_user_id" property="mchUserId"  />
+        <result column="symbol" property="symbol"  />
+        <result column="amount" property="amount" />
+        <result column="refund_amount" property="refundAmount" />
+        <result column="charge_symbol" property="chargeSymbol"  />
+        <result column="charge_amount" property="chargeAmount" />
+        <result column="body" property="body"  />
+        <result column="ip" property="ip"  />
+        <result column="actual_ip" property="actualIp"  />
+        <result column="trade_type" property="tradeType"  />
+        <result column="status" property="status" />
+        <result column="order_time" property="orderTime" />
+        <result column="expire_time" property="expireTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="notify_url" property="notifyUrl"  />
+        <result column="nonce_str" property="nonceStr"  />
+        <association property="frontUser" column="user_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                     select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+        <association property="mchFrontUser" column="mch_user_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                     select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+       <collection property="tokenList" ofType="com.github.wxiaoqi.security.common.entity.merchant.MchPayToken">
+			    <result column="detail_id" property="detailId" />
+			    <result column="symbol" property="symbol" />
+			    <result column="amount" property="amount"/>
+            </collection>
+    </resultMap>
+    
+    <sql id="resultSQL">
+        mtd.id,
+		mtd.wallet_order_no,
+		mtd.mch_order_no,
+		mtd.mch_no,
+		mtd.mch_id,
+		mtd.user_id,
+		mtd.mch_user_id,
+		mtd.charge_symbol,
+		mtd.charge_amount,
+		mtd.refund_amount,
+		mtd.body,
+		mtd.trade_type,
+		mtd.status,
+		mtd.ip,
+		mtd.actual_ip,
+		mtd.order_time,
+		mtd.expire_time,
+		mtd.update_time,
+		mtd.nonce_str,
+		mtd.notify_url,
+		mtd.settle_status,
+		mtd.settle_time,
+		mt.detail_id,
+		mt.symbol,
+		mt.amount
+    </sql>
+
+
+    <select id="selectForUpdate" resultMap="BaseResultMap">
+		select 
+		<include refid="resultSQL"/> 
+		 from mch_trade_detail mtd left  join mch_pay_token mt on mtd.id=mt.detail_id where
+        <if test="cm.walletOrderNo !=null and cm.walletOrderNo !=''">
+             wallet_order_no=#{cm.walletOrderNo}
+        </if>
+        <if test="cm.mchOrderNo !=null and cm.mchId != null">
+		   mch_order_no = #{cm.mchOrderNo}  and  mch_id = #{cm.mchId}
+        </if>
+		  for update
+	</select>
+	
+	<select id="selectByOrderNo" resultMap="BaseResultMap">
+		select
+		<include refid="resultSQL"/> 
+		 from mch_trade_detail mtd left  join mch_pay_token mt on mt.detail_id=mtd.id where
+        <if test="cm.walletOrderNo !=null and cm.walletOrderNo !=''">
+             wallet_order_no=#{cm.walletOrderNo}
+        </if>
+        <if test="cm.mchOrderNo !=null and cm.mchId != null">
+		   mch_order_no = #{cm.mchOrderNo}  and  mch_id = #{cm.mchId}
+        </if>
+	</select>
+
+    <select id="selectCustomPage" resultMap="BaseResultMap2">
+        SELECT
+        mtd.*,
+        mt.*
+        FROM
+        mch_trade_detail AS mtd
+        left join mch_pay_token mt on mtd.id=mt.detail_id
+        LEFT JOIN front_user AS fu ON mtd.user_id = fu.id
+        LEFT JOIN front_user_info AS fui ON fui.user_id = mtd.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !=''">
+                and fui.exchange_id=#{cm.exchangeId}
+            </if>
+            <if test="cm.symbol !=null and cm.symbol !='' ">
+                and mtd.symbol =#{cm.symbol}
+            </if>
+            <if test="cm.status != null and cm.status !=''">
+                and mtd.status =#{cm.status}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND mtd.order_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND mtd.order_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+            <if test="cm.keyword != null and cm.keyword !='' ">
+                and (fu.email like CONCAT('%',#{cm.keyword},'%')
+                 or fu.user_name like CONCAT('%',#{cm.keyword},'%')
+                 or fu.mobile like CONCAT('%',#{cm.keyword},'%')
+                 or mtd.mch_no =#{cm.keyword}
+                  )
+            </if>
+            <if test="cm.status != null and cm.status!=''">
+                and mtd.status =#{cm.status}
+            </if>
+            <if test="cm.orderNo !=null and cm.orderNo !=''">
+                and (mtd.wallet_order_no =#{cm.orderNo} or mtd.mch_order_no =#{cm.orderNo})
+            </if>
+        </where>
+        ORDER BY mtd.id desc
+    </select>
+
+</mapper>

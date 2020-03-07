@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.HedgeDetailMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.HedgeDetail">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="trade_time" property="tradeTime"/>
+        <result column="user_id" property="userId"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="src_symbol" property="srcSymbol"/>
+        <result column="dst_symbol" property="dstSymbol"/>
+        <result column="src_amount" property="srcAmount"/>
+        <result column="dst_amount" property="dstAmount"/>
+        <result column="trans_price" property="transPrice"/>
+        <result column="symbol" property="symbol"/>
+        <result column="out_symbol" property="outSymbol"/>
+        <result column="direction" property="direction"/>
+        <result column="hedge_time" property="hedgeTime"/>
+        <result column="hedge_order_id" property="hedgeOrderId"/>
+        <result column="hedge_price" property="hedgePrice"/>
+        <result column="hedge_trade_price" property="hedgeTradePrice"/>
+        <result column="hedge_status" property="hedgeStatus"/>
+        <result column="hedge_status_text" property="hedgeStatusText"/>
+        <result column="hedge_update_time" property="hedgeUpdateTime"/>
+        <result column="remark" property="remark"/>
+        <result column="proxy_code" property="proxyCode"/>
+        <result column="admin_dealed" property="adminDealed"/>
+        <association property="frontUser" column="user_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                     select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+    </resultMap>
+    <select id="selectCustomPage" resultMap="BaseResultMap">
+        SELECT
+        hd.*
+        FROM
+        hedge_detail AS hd
+        LEFT JOIN front_user AS fu ON hd.user_id = fu.id
+        LEFT JOIN front_user_info AS fui ON hd.user_id = fui.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !=''">
+                and fui.exchange_id=#{cm.exchangeId}
+            </if>
+            <if test="cm.status !=null and cm.status !=''">
+                and hd.hedge_status=#{cm.status}
+            </if>
+            <if test="cm.symbol!=null and cm.symbol !=''">
+                and hd.dst_symbol =#{cm.symbol}
+            </if>
+            <if test="cm.keyword != null and cm.keyword !='' ">
+                and (fu.email like CONCAT('%',#{cm.keyword},'%') or fu.user_name like CONCAT('%',#{cm.keyword},'%') or
+                fu.mobile like CONCAT('%',#{cm.keyword},'%') or hd.hedge_order_id =#{cm.keyword} or hd.order_no =#{cm.keyword})
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND hd.trade_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND hd.trade_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+    </select>
+</mapper>

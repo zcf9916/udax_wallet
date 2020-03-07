@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.ud.HBonusConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.ud.HBonusConfig" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"  />
+    <result column="level" property="level"  />
+    <result column="profit_rate" property="profitRate"/>
+    <result column="crt_time" property="crtTime"/>
+    <result column="crt_name" property="crtName"/>
+    <result column="upd_time" property="updTime"/>
+    <result column="upd_name" property="updName"/>
+    <result column="remark" property="remark"/>
+    <result column="exch_id" property="exchId"/>
+    <result column="exchName" property="exchName"/>
+  </resultMap>
+
+  <select id="selectCustomPage" resultMap="BaseResultMap">
+    SELECT hp.*,wei.white_name as exchName from h_bonus_config as hp LEFT JOIN white_exch_info as wei on hp.exch_id = wei.id
+    <where>
+      <if test="cm.level !=null and cm.level!=''">
+        and hp.level =#{cm.level}
+      </if>
+      <if test="cm.exchId !=null and cm.exchId !=''">
+        and hp.exch_id =#{cm.exchId}
+      </if>
+    </where>
+  </select>
+</mapper>

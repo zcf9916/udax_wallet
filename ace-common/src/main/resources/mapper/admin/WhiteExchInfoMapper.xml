@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.WhiteExchInfoMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.WhiteExchInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="white_name" property="whiteName"/>
+        <result column="language" property="language"/>
+        <result column="lt_code" property="ltCode"/>
+        <result column="remark_" property="remark"/>
+        <result column="domain_name" property="domainName"/>
+        <result column="own_time_zone" property="ownTimeZone"/>
+        <result column="status" property="status"/>
+        <result column="crt_time" property="crtTime"/>
+        <result column="crt_name" property="crtName"/>
+        <result column="upd_time" property="updTime"/>
+        <result column="upd_name" property="updName"/>
+        <result column="group_id" property="groupId"/>
+        <result column="src_symbol_id" property="srcSymbolId"/>
+        <result column="dst_symbol" property="dstSymbol"/>
+        <result column="register_type" property="registerType"/>
+        <result column="settle_time" property="settleTime"/>
+    </resultMap>
+
+    <select id="selectExchInfoByGroupCode" resultType="java.lang.Long">
+    SELECT id from white_exch_info WHERE group_id=(SELECT id from base_group where code =#{code})
+    </select>
+
+    <select id="selectCustomPage" resultMap="BaseResultMap">
+        select  *  from white_exch_info
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !=''">
+                and id=#{cm.exchangeId}
+            </if>
+            <if test="cm.whiteName !=null and cm.whiteName !=''">
+                and white_name =#{cm.whiteName}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.GroupMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.Group">
+        <!--
+          WARNING - @mbggenerated
+        -->
+        <id column="id"  property="id"/>
+        <result column="code"  property="code"/>
+        <result column="name"  property="name"/>
+        <result column="parent_id"  property="parentId"/>
+        <result column="path"  property="path"/>
+        <result column="type" property="type"/>
+        <result column="group_type"  property="groupType"/>
+        <result column="description"  property="description"/>
+        <result column="crt_time" property="crtTime"  />
+        <result column="crt_name" property="crtName"  />
+        <result column="upd_time" property="updTime"  />
+        <result column="upd_name" property="updName"  />
+        <result column="broker"  property="broker"/>
+    </resultMap>
+
+    <delete id="deleteGroupMembersById">
+      delete from base_group_member where group_id = #{groupId}
+    </delete>
+
+    <delete id="deleteGroupLeadersById">
+    delete from base_group_leader where group_id = #{groupId}
+  </delete>
+
+    <select id="selectGroupByUserId" resultMap="BaseResultMap">
+     select * from base_group where id in(SELECT group_id from base_group_leader WHERE user_id =#{userId});
+    </select>
+
+    <select id="selectGroupByParent" resultMap="BaseResultMap">
+        select * from base_group where parent_id =#{parentId};
+    </select>
+
+    <select id="selectGroupLeader" resultType="java.lang.String">
+        SELECT bu.username from base_group_leader as bgl LEFT JOIN base_user as bu on bgl.user_id = bu.id where bgl.user_id =#{userId}
+    </select>
+    <select id="selectGroup" resultType="java.lang.Long">
+        select group_id from base_group_leader where user_id =#{userId}
+    </select>
+    <select id="selectGroupCode" resultType="java.lang.Integer">
+        SELECT COUNT(0) from base_group where code=#{code}
+    </select>
+
+    <insert id="insertGroupMembersById">
+    insert into base_group_member (
+       group_id,user_id
+    )
+    values(
+       #{groupId},#{userId}
+    )
+  </insert>
+    <insert id="insertGroupLeadersById">
+    insert into base_group_leader (
+       group_id,user_id
+    )
+    values(
+       #{groupId},#{userId}
+    )
+  </insert>
+
+
+</mapper>

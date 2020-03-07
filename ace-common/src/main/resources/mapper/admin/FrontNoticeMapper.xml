@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.FrontNoticeMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.FrontNotice">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="notice_title" property="noticeTitle"/>
+        <result column="notice_level" property="noticeLevel"/>
+        <result column="status" property="status"/>
+        <result column="exchange_id" property="exchangeId"/>
+        <result column="client_type" property="clientType"/>
+        <result column="crt_time" property="crtTime"/>
+        <result column="crt_name" property="crtName"/>
+        <result column="upd_time" property="updTime"/>
+        <result column="upd_name" property="updName"/>
+        <result column="content" property="content"/>
+        <result column="remark" property="remark"/>
+        <result column="language_type" property="languageType"/>
+        <association property="exchInfo" column="exchange_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.WhiteExchInfo"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.WhiteExchInfoMapper.selectByPrimaryKey"/>
+    </resultMap>
+    <select id="selectCustomPage" resultMap="BaseResultMap">
+        select fn.* from front_notice as fn LEFT JOIN white_exch_info as wei on fn.exchange_id=wei.id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !=''">
+                and fn.exchange_id=#{cm.exchangeId}
+            </if>
+            <if test="cm.keyword !=null and cm.keyword!=''">
+                and ( fn.notice_title =#{cm.keyword})
+            </if>
+            <if test="cm.clientType !=null and cm.clientType !=''">
+                and fn.client_type =#{cm.clientType}
+            </if>
+        </where>
+    </select>
+</mapper>

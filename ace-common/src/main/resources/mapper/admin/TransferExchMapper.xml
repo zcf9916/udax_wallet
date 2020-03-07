@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.TransferExchMapper">
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.TransferExch" >
+    <id column="id" property="id"  />
+    <result column="exch_id" property="exchId"  />
+    <result column="transfer_id" property="transferId"  />
+    <result column="crt_time" property="crtTime"/>
+    <result column="crt_name" property="crtName"/>
+    <result column="upd_time" property="updTime"/>
+    <result column="upd_name" property="updName"/>
+    <result column="charge_id" property="chargeId"/>
+    <result column="is_open" property="isOpen"/>
+    <result column="min_trans_amount" property="minTransAmount"/>
+    <result column="max_trans_amount" property="maxTransAmount"/>
+    <association property="cfgChargeTemplate" column="charge_id"
+                 javaType="com.github.wxiaoqi.security.common.entity.admin.CfgChargeTemplate"
+                 select="com.github.wxiaoqi.security.common.mapper.admin.CfgChargeTemplateMapper.selectByPrimaryKey"/>
+
+  </resultMap>
+
+  <select id="selectTransferByExchId" resultMap="BaseResultMap">
+    select * from transfer_exch where transfer_id =#{transferId} and exch_id  =#{exchId}
+  </select>
+
+  <select id="selectChargeAll" resultMap="BaseResultMap">
+      SELECT
+        tre.exch_id AS exch_id,
+        tre.charge_id AS charge_id,
+        cctf.src_symbol AS srcSymbol,
+        cctf.dst_symbol AS dstSymbol,
+        tre.max_trans_amount AS max_trans_amount,
+        tre.min_trans_amount AS min_trans_amount,
+        tre.is_open as is_open
+    FROM
+        transfer_exch AS tre
+    LEFT  JOIN cfg_currency_transfer AS cctf ON cctf.id = tre.transfer_id
+    where cctf.status = 1
+  </select>
+
+
+  <resultMap id="BaseResultMap2" type="com.github.wxiaoqi.security.common.vo.SymbolTransfer">
+    <id column="id" property="id"  />
+    <result column="src_symbol" property="srcSymbol"/>
+    <result column="dst_symbol" property="dstSymbol"/>
+    <result column="max_trans_amount" property="maxTransAmount"/>
+    <result column="min_trans_amount" property="minTransAmount"/>
+    <result column="is_open" property="isOpen"/>
+    <result column="transfer_id" property="transferId"/>
+    <association property="charge" column="charge_id"
+                 javaType="com.github.wxiaoqi.security.common.entity.admin.CfgChargeTemplate"
+                 select="com.github.wxiaoqi.security.common.mapper.admin.CfgChargeTemplateMapper.selectByPrimaryKey"/>
+  </resultMap>
+  <select id="selectTransfer" resultMap="BaseResultMap2">
+     SELECT
+        cct.id AS id,
+        cct.src_symbol AS src_symbol,
+        cct.dst_symbol AS dst_symbol,
+        te.max_trans_amount AS max_trans_amount,
+        te.min_trans_amount AS min_trans_amount,
+        te.charge_id AS charge_id,
+        te.id as transfer_id,
+        te.is_open as is_open
+    FROM
+        cfg_currency_transfer AS cct
+    LEFT JOIN transfer_exch AS te ON cct.id = te.transfer_id
+    and te.exch_id =#{cm.exchId}
+	ORDER BY cct.src_symbol
+  </select>
+</mapper>

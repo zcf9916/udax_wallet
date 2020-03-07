@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.front.UserLoginLogMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.front.UserLoginLog" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"  />
+    <result column="user_id" property="userId"  />
+    <result column="login_type" property="loginType" />
+    <result column="login_ip" property="loginIp"  />
+    <result column="login_status" property="loginStatus" />
+    <result column="create_time" property="createTime"  />
+  </resultMap>
+</mapper>

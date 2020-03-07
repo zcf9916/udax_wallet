@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.fund.FundPurchaseInfoMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.fund.FundPurchaseInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="fund_id" property="fundId"/>
+        <result column="fund_name" property="fundName"/>
+        <result column="user_id" property="userId"/>
+        <result column="dc_code" property="dcCode"/>
+        <result column="order_volume" property="orderVolume"/>
+        <result column="exchange_id" property="exchangeId"/>
+        <result column="order_chrge" property="orderChrge"/>
+        <result column="return_volume" property="returnVolume"/>
+        <result column="profilt_volume" property="profiltVolume"/>
+        <result column="yield" property="yield"/>
+        <result column="status" property="status"/>
+        <result column="order_time" property="orderTime"/>
+        <result column="settle_time" property="settleTime"/>
+        <result column="update_time" property="updateTime"/>
+        <association property="frontUser" column="user_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                     select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+    </resultMap>
+
+
+    <resultMap id="baseResultMap1" type="com.github.wxiaoqi.security.common.entity.fund.FundPurchaseInfo">
+        <id column="id_" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="user_id" property="userId"/>
+        <result column="fund_id" property="fundId"/>
+        <result column="fund_name" property="fundName"/>
+        <result column="dc_code" property="dcCode"/>
+        <result column="order_volume" property="orderVolume"/>
+        <result column="order_chrge" property="orderChrge"/>
+        <result column="return_volume" property="returnVolume"/>
+        <result column="profilt_volume" property="profiltVolume"/>
+        <result column="yield" property="yield"/>
+        <result column="status" property="status"/>
+        <result column="order_time" property="orderTime"/>
+        <result column="settle_time" property="settleTime"/>
+    </resultMap>
+
+    <select id="selectProdLinkProPage" resultMap="baseResultMap1">
+        select * from fund_purchase_info f left join fund_product_profilt_info p on f.fund_id = p.fund_id
+        <where>
+            <if test="cm.userId != null and cm.userId != '' and cm.userId > 0">
+                and user_id=#{cm.userId}
+            </if>
+            <if test="cm.status != null and cm.status != '' and cm.status > 0">
+                and status = #{cm.status}
+            </if>
+            <if test="cm.fundName != null and cm.fundName != ''">
+                and fund_name like CONCAT('%',#{cm.fundName},'%')
+            </if>
+            <if test="cm.dcCode != null and cm.dcCode != ''">
+                and dc_code = #{cm.dcCode}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND order_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND order_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+    </select>
+
+    <!-- 记录加行锁 -->
+    <select id="selectIdForUpdate" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select * from fund_purchase_info  where id_ = #{id} for update
+	</select>
+
+    <!--查询总投资人数和基金明细总数 实际规模-->
+    <select id="getInvestors" resultType="java.util.Map">
+        SELECT count(DISTINCT fpi.user_id) AS totalInvestors,
+        count(fpi.id) AS totalOrder,
+          fppi.curr_profilt AS currProfilt
+        FROM fund_purchase_info AS fpi
+        LEFT JOIN fund_product_profilt_info AS fppi ON fpi.fund_id = fppi.fund_id
+        where fpi.fund_id =#{fundId}
+    </select>
+
+    <select id="selectCustomPage" resultMap="BaseResultMap">
+        SELECT fpi.* from fund_purchase_info as fpi LEFT JOIN front_user as fu on fu.id=fpi.user_id
+        <where>
+             <if test="cm.fundId !=null and cm.fundId !=''">
+                 and fpi.fund_id =#{cm.fundId}
+             </if>
+            <if test="cm.dcCode !=null and cm.dcCode!=''">
+                and fpi.dc_code =#{cm.dcCode}
+            </if>
+            <if test="cm.exchangeId !=null and cm.exchangeId != ''">
+                and fpi.exchange_id=#{cm.exchangeId}
+            </if>
+            <if test="cm.status !=null and cm.status !=''">
+                and fpi.status =#{cm.status}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND fpi.order_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND fpi.order_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+            <if test="cm.keyword != null and cm.keyword !='' ">
+                and (fu.email like CONCAT('%',#{cm.keyword},'%') or fu.user_name like CONCAT('%',#{cm.keyword},'%') or
+                fu.mobile like CONCAT('%',#{cm.keyword},'%'))
+            </if>
+        </where>
+    </select>
+</mapper>

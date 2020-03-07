@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.BaseSmsMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.common.BaseSms" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"/>
+    <result column="biz_id" property="bizId"/>
+    <result column="type" property="type"/>
+    <result column="phone" property="phone"/>
+    <result column="content" property="content"/>
+    <result column="send_state" property="sendState"/>
+    <result column="crt_time" property="crtTime"/>
+    <result column="crt_name" property="crtName"/>
+    <result column="upd_time" property="updTime"/>
+    <result column="upd_name" property="updName"/>
+  </resultMap>
+</mapper>

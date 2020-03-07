@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.merchant.MerchantMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.merchant.Merchant">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"/>
+    <result column="user_id" property="userId"/>
+    <result column="mch_name" property="mchName"/>
+    <result column="mch_status" property="mchStatus"/>
+    <result column="mch_license_zm" property="mchLicenseZm"/>
+    <result column="mch_license_fm" property="mchLicenseFm"/>
+    <result column="mch_no" property="mchNo"/>
+    <result column="secret_key" property="secretKey"/>
+    <result column="bind_address" property="bindAddress"/>
+    <result column="withdraw_callback" property="withdrawCallback"/>
+    <result column="recharge_callback" property="rechargeCallback"/>
+    <result column="create_time" property="createTime"/>
+    <result column="charge_id" property="chargeId"/>
+    <result column="settle_time" property="settleTime"/>
+    <association property="dictData" column="dict_data"
+                 javaType="com.github.wxiaoqi.security.common.entity.admin.DictData"
+                 select="com.github.wxiaoqi.security.common.mapper.admin.DictDataMapper.selectByPrimaryKey"/>
+
+    <association property="frontUser" column="user_id"
+                 javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                 select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+
+    <association property="cfgChargeTemplate" column="charge_id"
+                 javaType="com.github.wxiaoqi.security.common.entity.admin.CfgChargeTemplate"
+                 select="com.github.wxiaoqi.security.common.mapper.admin.CfgChargeTemplateMapper.selectByPrimaryKey"/>
+</resultMap>
+
+    <select id="selectMerchantCount" resultType="java.lang.Integer">
+        select COUNT(1) from merchant as me left join front_user_info as fui on me.user_id =fui.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND me.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND me.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectCustomPage" resultMap="BaseResultMap">
+        SELECT mc.* from merchant as mc LEFT JOIN front_user_info as fu on mc.user_id =fu.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fu.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.mchStatus !=null and cm.mchStatus !=''">
+                and mc.mch_status=#{cm.mchStatus}
+            </if>
+            <if test="cm.keyword != null and cm.keyword !='' ">
+                and (mc.mch_name like CONCAT('%',#{cm.keyword},'%'))
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND mc.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND mc.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+    </select>
+</mapper>

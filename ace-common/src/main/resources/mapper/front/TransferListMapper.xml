@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.front.TransferListMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.front.TransferList" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="receive_user_id" property="receiveUserId" jdbcType="BIGINT" />
+    <result column="receive_user_name" property="receiveUserName" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+
+    <association property="frontUserInfo" column="receive_user_id"
+                 javaType="com.github.wxiaoqi.security.common.entity.front.FrontUserInfo"
+                 select="com.github.wxiaoqi.security.common.mapper.front.FrontUserInfoMapper.selectByUserId">
+  </association>
+
+  </resultMap>
+
+  <select id="selectUnionUserInfo" resultMap="BaseResultMap">
+    select * from transfer_list
+    <where>
+      <if test="cm.userId != null and cm.userId > 0">
+        user_id = #{cm.userId}
+      </if>
+    </where>
+  </select>
+
+
+
+</mapper>

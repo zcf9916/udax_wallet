@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.front.FrontWithdrawMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.front.FrontWithdraw">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="trans_no" property="transNo"/>
+        <result column="user_address" property="userAddress"/>
+        <result column="user_id" property="userId"/>
+        <result column="trade_amount" property="tradeAmount"/>
+        <result column="transaction_id" property="transactionId"/>
+        <result column="symbol" property="symbol"/>
+        <result column="basic_symbol" property="basicSymbol"/>
+        <result column="charge_amount" property="chargeAmount"/>
+        <result column="arrival_amoumt" property="arrivalAmoumt"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="fee_symbol" property="feeSymbol"/>
+        <result column="withdraw_fee" property="withdrawFee"/>
+        <result column="proxy_code" property="proxyCode"/>
+        <result column="status" property="status"/>
+        <result column="type" property="type"/>
+        <result column="protocol_type" property="protocolType"/>
+        <result column="mch_order_no" property="mchOrderNo"/>
+        <result column="nonce_str" property="nonceStr"/>
+        <result column="confirmations" property="confirmations"/>
+        <result column="auto_withdraw" property="autoWithdraw"/>
+
+        <association property="frontUser" column="user_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                     select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+
+        <association property="dictData" column="dict_data"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.DictData"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.DictDataMapper.selectByPrimaryKey"/>
+    </resultMap>
+
+    <resultMap id="BlockchainResult" type="com.github.wxiaoqi.security.common.entity.front.FrontWithdraw">
+        <id column="id" property="id"/>
+        <result column="trans_no" property="transNo"/>
+        <result column="user_address" property="userAddress"/>
+        <result column="user_id" property="userId"/>
+        <result column="trade_amount" property="tradeAmount"/>
+        <result column="transaction_id" property="transactionId"/>
+        <result column="symbol" property="symbol"/>
+        <result column="basic_symbol" property="basicSymbol"/>
+        <result column="charge_amount" property="chargeAmount"/>
+        <result column="arrival_amoumt" property="arrivalAmoumt"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="fee_symbol" property="feeSymbol"/>
+        <result column="withdraw_fee" property="withdrawFee"/>
+        <result column="proxy_code" property="proxyCode"/>
+        <result column="status" property="status"/>
+        <result column="protocol_type" property="protocolType"/>
+        <result column="type" property="type"/>
+        <result column="mch_order_no" property="mchOrderNo"/>
+        <result column="nonce_str" property="nonceStr"/>
+        <result column="auto_withdraw" property="autoWithdraw"/>
+        <result column="confirmations" property="confirmations"/>
+        <association property="userInfo" column="user_id"   javaType="com.github.wxiaoqi.security.common.entity.front.FrontUserInfo" >
+          <result column="exchange_id" property="exchangeId"/>
+        </association>
+
+    </resultMap>
+
+    <!--结果集中包含白标id -->
+    <select id="selectUnionExId" resultMap="BlockchainResult">
+        SELECT
+        fw.*,fui.exchange_id
+        FROM
+        front_withdraw AS fw
+        LEFT JOIN front_user_info AS fui ON fui.user_id = fw.user_id
+        where
+            fw.basic_symbol =#{cm.basicSymbol}
+                and  fw.status=#{cm.status}
+    </select>
+
+    <select id="selectForUpdate" resultMap="BaseResultMap">
+			select * from front_withdraw  where user_id=#{cm.userId} and mch_order_no = #{cm.mchOrderNo} for update
+	</select>
+
+    <select id="selectForUpdate2" resultMap="BaseResultMap">
+			select * from front_withdraw  where trans_no =#{id}  for update
+	</select>
+
+    <update id="updateById" parameterType="com.github.wxiaoqi.security.common.entity.front.FrontWithdraw">
+        update front_withdraw
+        set dict_data =#{dictData.id},
+        status=#{status}
+        where id=#{id} and status=status
+  </update>
+
+    <!--查询用户某个币种的单日提币量-->
+    <select id="queryWithdrawDaily" resultType="java.math.BigDecimal">
+    SELECT SUM(trade_amount) FROM wallet.front_withdraw where user_id = #{userId} and symbol = #{dcCode}
+        and create_time <![CDATA[<]]>  date_sub(curdate(),interval -1 day)  + ' 00:00:00'
+        and create_time <![CDATA[>=]]>  curdate() + ' 00:00:00' and status != 4 and status != 6;
+	</select>
+
+
+    <select id="selectCustomPage" resultMap="BaseResultMap">
+        SELECT
+        fw.*
+        FROM
+        front_withdraw AS fw
+        LEFT JOIN front_user AS fu ON fw.user_id = fu.id
+        LEFT JOIN front_user_info AS fui ON fui.user_id = fw.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !=''">
+                and  fui.exchange_id=#{cm.exchangeId}
+            </if>
+            <if test="cm.symbol!=null and cm.symbol !=''">
+                and fw.symbol =#{cm.symbol}
+            </if>
+            <if test="cm.keyword != null and cm.keyword !='' ">
+                and (fu.email like CONCAT('%',#{cm.keyword},'%')
+                or fu.user_name like CONCAT('%',#{cm.keyword},'%')
+                or fu.mobile like CONCAT('%',#{cm.keyword},'%'))
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND fw.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND fw.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+            <if test="cm.userId !=null and cm.userId!=''">
+                and fw.user_id=#{cm.userId}
+            </if>
+            <if test="cm.userAddress !=null and cm.userAddress!=''">
+                and fw.user_address =#{cm.userAddress}
+            </if>
+            <if test="cm.status !=null and cm.status !=''">
+              and  fw.status=#{cm.status}
+            </if>
+            <if test="cm.transNo !=null and cm.transNo !=''">
+              and  fw.trans_no =#{cm.transNo}
+            </if>
+            <if test="cm.isStatus !=null and cm.isStatus !=''">
+               and  fw.status !=#{cm.isStatus}
+            </if>
+        </where>
+        ORDER BY fw.status =1 ,fw.id DESC
+    </select>
+</mapper>

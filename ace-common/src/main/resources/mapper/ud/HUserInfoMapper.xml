@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.ud.HUserInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.ud.HUserInfo" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" property="id"/>
+    <result column="user_id" property="userId"/>
+    <result column="status" property="status"/>
+    <result column="is_valid" property="isValid"/>
+    <result column="recommond_code" property="recommondCode"/>
+    <result column="parent_id" property="parentId"/>
+    <result column="top_id" property="topId"/>
+    <result column="visit_code" property="visitCode"/>
+    <result column="exchange_id" property="exchangeId"/>
+    <result column="level" property="level"/>
+    <result column="direct_child" property="directChild"/>
+    <result column="child_invest" property="childInvest"/>
+    <result column="add_amount" property="addAmount"/>
+    <result column="add_node_amount" property="addNodeAmount"/>
+    <result column="all_child" property="allChild"/>
+    <result column="total_amount" property="totalAmount"/>
+    <result column="create_time" property="createTime"/>
+    <result column="auto_repeat" property="autoRepeat"/>
+    <result column="user_level" property="userLevel"/>
+
+  </resultMap>
+
+<!--后台关联查询Result -->
+  <resultMap id="BaseResultMap2" type="com.github.wxiaoqi.security.common.entity.ud.HUserInfo" >
+    <result column="id" property="id"/>
+    <result column="user_id" property="userId"/>
+    <result column="status" property="status"/>
+    <result column="is_valid" property="isValid"/>
+    <result column="recommond_code" property="recommondCode"/>
+    <result column="parent_id" property="parentId"/>
+    <result column="top_id" property="topId"/>
+    <result column="visit_code" property="visitCode"/>
+    <result column="exchange_id" property="exchangeId"/>
+    <result column="level" property="level"/>
+    <result column="direct_child" property="directChild"/>
+    <result column="child_invest" property="childInvest"/>
+    <result column="add_amount" property="addAmount"/>
+    <result column="add_node_amount" property="addNodeAmount"/>
+    <result column="all_child" property="allChild"/>
+    <result column="total_amount" property="totalAmount"/>
+    <result column="create_time" property="createTime"/>
+    <result column="auto_repeat" property="autoRepeat"/>
+    <association property="user" column="user_id"
+                 javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                 select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+
+    <association property="parentUser" column="parent_id"
+                 javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                 select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+
+    <association property="topUser" column="top_id"
+                 javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                 select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+  </resultMap>
+
+  <select id="selectCustomPage" resultMap="BaseResultMap2">
+    select * from h_user_info as ui left join front_user as fu
+    on ui.user_id =fu.id
+    <where>
+      <if test="cm.parentId !=null and cm.parentId !=''">
+        and parent_id = #{cm.parentId}
+      </if>
+      <if test="cm.keyword !=null and cm.keyword !=''">
+        and (fu.email like CONCAT('%',#{cm.keyword},'%') or fu.user_name like CONCAT('%',#{cm.keyword},'%') or fu.mobile like CONCAT('%',#{cm.keyword},'%'))
+      </if>
+      <if test="cm.isValid !=null and cm.isValid != ''">
+        and ui.is_valid =#{cm.isValid}
+      </if>
+      <if test="cm.status !=null and cm.status !=''">
+        and ui.status =#{cm.status}
+      </if>
+      <if test="cm.exchId!=null and cm.exchId !=''">
+        and ui.exchange_id =#{cm.exchId}
+      </if>
+      <if test="cm.memberUserId !=null and cm.memberUserId !=''">
+       and user_id in  (SELECT user_id FROM h_commission_relation where receive_user_id = #{cm.memberUserId})
+      </if>
+    </where>
+  </select>
+
+  <select id="selectAllChildOfTopUser" resultMap="BaseResultMap">
+    SELECT user_id,all_child,child_invest,add_amount,add_node_amount,LEVEL FROM h_user_info WHERE user_id
+    in (SELECT receive_user_id FROM h_commission_relation WHERE user_id =  #{userId}) ORDER BY LEVEL DESC
+  </select>
+
+  <!--查询满足条件的全球用户-->
+  <select id="selectGlobalUser" resultMap="BaseResultMap">
+    SELECT * FROM h_user_info WHERE exchange_id = #{cm.exchId} and child_invest + add_node_amount <![CDATA[>=]]> #{cm.investAmount}
+  </select>
+
+  <update id="increTotalChild" parameterType="java.util.List">
+        update h_user_info
+        set all_child = all_child + 1
+        where
+    user_id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+          </foreach>
+
+  </update>
+
+
+  <update id="increChildInvest" parameterType="java.util.Map">
+    update h_user_info
+    set child_invest = child_invest + #{cm.invest}
+    where
+    user_id in
+    <foreach collection="cm.list" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+
+  </update>
+
+
+  <update id="increDirectChild" parameterType="java.lang.Long">
+    update h_user_info
+    set direct_child = direct_child + 1
+    where
+    user_id  = #{id}
+
+  </update>
+
+  <select id="selectAllByChildUserId" resultMap="BaseResultMap">
+    SELECT * from h_user_info where user_id in ( SELECT receive_user_id from h_commission_relation where user_id =#{id} )
+  </select>
+
+
+
+</mapper>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.CfgCurrencyTransferMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.CfgCurrencyTransfer">
+        <id column="id" property="id"/>
+        <result column="transfer_type" property="transferType"/>
+        <result column="src_symbol" property="srcSymbol"/>
+        <result column="dst_symbol" property="dstSymbol"/>
+        <result column="symbol" property="symbol"/>
+        <result column="hedge_flag" property="hedgeFlag"/>
+        <result column="min_trans_amount" property="minTransAmount"/>
+        <result column="max_trans_amount" property="maxTransAmount"/>
+        <result column="offset_price" property="offsetPrice"/>
+        <result column="charge_dc_code" property="chargeDcCode"/>
+        <result column="status" property="status"/>
+        <result column="crt_time" property="crtTime"/>
+        <result column="crt_name" property="crtName"/>
+        <result column="upd_time" property="updTime"/>
+        <result column="upd_name" property="updName"/>
+        <result column="remark" property="remark"/>
+        <result column="sort" property="sort"/>
+        <result column="exchId" property="exchId"/>
+        <association property="cfgChargeTemplate" column="charge_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.CfgChargeTemplate"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.CfgChargeTemplateMapper.selectByPrimaryKey"/>
+        <collection property="dstList" ofType="com.github.wxiaoqi.security.common.entity.admin.CfgCurrencyTransfer" column="{exchId=exchId,srcSymbol=src_symbol}"  select="com.github.wxiaoqi.security.common.mapper.admin.CfgCurrencyTransferMapper.selectTransferBySrcSymbol"/>
+    </resultMap>
+    <resultMap id="BaseResultMap2" type="com.github.wxiaoqi.security.common.entity.admin.CfgCurrencyTransfer">
+        <id column="id" property="id"/>
+        <result column="transfer_type" property="transferType"/>
+        <result column="src_symbol" property="srcSymbol"/>
+        <result column="dst_symbol" property="dstSymbol"/>
+        <result column="symbol" property="symbol"/>
+        <result column="hedge_flag" property="hedgeFlag"/>
+        <result column="min_trans_amount" property="minTransAmount"/>
+        <result column="max_trans_amount" property="maxTransAmount"/>
+        <result column="offset_price" property="offsetPrice"/>
+        <result column="charge_dc_code" property="chargeDcCode"/>
+        <result column="status" property="status"/>
+        <result column="crt_time" property="crtTime"/>
+        <result column="crt_name" property="crtName"/>
+        <result column="upd_time" property="updTime"/>
+        <result column="upd_name" property="updName"/>
+        <result column="remark" property="remark"/>
+        <result column="sort" property="sort"/>
+        <association property="cfgChargeTemplate" column="charge_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.CfgChargeTemplate"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.CfgChargeTemplateMapper.selectByPrimaryKey"/>
+    </resultMap>
+
+    <insert id="insertTransfer" parameterType="com.github.wxiaoqi.security.common.entity.admin.CfgCurrencyTransfer">
+    insert into cfg_currency_transfer (id,transfer_type,src_symbol,dst_symbol,symbol,hedge_flag,min_trans_amount,max_trans_amount,offset_price,charge_dc_code,status,crt_time,crt_name,upd_time,upd_name,remark,charge_id,sort)
+    values (#{id},#{transferType},#{srcSymbol},#{dstSymbol},#{symbol},#{hedgeFlag},#{minTransAmount},
+    #{maxTransAmount},#{offsetPrice},#{chargeDcCode},#{status},#{crtTime},#{crtName},#{updTime},#{updName},#{remark},#{cfgChargeTemplate.id},#{sort})
+  </insert>
+
+
+    <update id="updateTransfer" parameterType="com.github.wxiaoqi.security.common.entity.admin.CfgCurrencyTransfer">
+        update cfg_currency_transfer
+        set symbol =#{symbol},
+        min_trans_amount=#{minTransAmount},
+        max_trans_amount=#{maxTransAmount},
+        offset_price =#{offsetPrice},
+        charge_dc_code =#{chargeDcCode},
+        status=#{status},
+        upd_time=#{updTime},
+        upd_name=#{updName},
+        remark=#{remark},
+        charge_id=#{cfgChargeTemplate.id},
+        sort=#{sort}
+        where id=#{id}
+  </update>
+
+    <select id="selectQuery" resultMap="BaseResultMap2">
+        select * from cfg_currency_transfer
+        <where>
+            <if test="cm.srcSymbol !=null and cm.srcSymbol!= ''">
+                and src_symbol =#{cm.srcSymbol}
+            </if>
+            <if test="cm.status!=null and cm.status !=''">
+                and status=#{cm.status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectTransferById" resultMap="BaseResultMap2">
+      select * from  cfg_currency_transfer where id =#{id}
+     </select>
+
+    <select id="selectTransferBySymbol" resultType="java.lang.Integer">
+        select COUNT(0) from cfg_currency_transfer
+        <where>
+            <if test="cm.srcSymbol!=null and cm.srcSymbol !=''">
+                and  src_symbol =#{cm.srcSymbol}
+            </if>
+            <if test="cm.dstSymbol !=null and cm.dstSymbol !=''">
+                and dst_symbol=#{cm.dstSymbol}
+            </if>
+            <if test="cm.status !=null and cm.status !=''">
+                and status=#{cm.status}
+            </if>
+            <if test="cm.sort!=null and cm.sort !=''">
+                and sort =#{cm.sort}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectTransferBySrcSymbol" resultMap="BaseResultMap2">
+       SELECT
+        tre.exch_id AS exchId,
+        cctf.transfer_type,
+		cctf.src_symbol,
+        cctf.dst_symbol,
+        cctf.hedge_flag,
+        cctf.min_trans_amount,
+        cctf.max_trans_amount,
+        cctf.charge_dc_code,
+        cctf. STATUS,
+        cctf.charge_id
+        FROM  transfer_exch AS tre
+        LEFT JOIN cfg_currency_transfer AS cctf ON cctf.id = tre.transfer_id
+        WHERE  tre.exch_id = #{exchId} and cctf.src_symbol =#{srcSymbol}
+    </select>
+
+    <select id="cacheReturn" resultMap="BaseResultMap">
+        SELECT
+            tre.exch_id AS exchId,
+            cctf.*
+        FROM    transfer_exch AS tre
+        LEFT JOIN cfg_currency_transfer AS cctf
+        ON cctf.id = tre.transfer_id
+        where cctf.status = 1
+        GROUP BY    tre.exch_id,  src_symbol
+    </select>
+
+</mapper>

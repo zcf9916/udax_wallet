@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.UserOfferInfoMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.UserOfferInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"/>
+    <!--<result column="user_id" property="userId"  />-->
+    <result column="src_symbol" property="srcSymbol"/>
+    <result column="dst_symbol" property="dstSymbol"/>
+    <result column="order_price" property="orderPrice"/>
+    <result column="order_volume" property="orderVolume"/>
+    <result column="remain_volume" property="remainVolume"/>
+    <result column="symbol" property="symbol"/>
+    <result column="status" property="status"/>
+    <result column="remark" property="remark"/>
+    <result column="crt_time" property="crtTime"/>
+    <result column="crt_name" property="crtName"/>
+    <result column="upd_time" property="updTime"/>
+    <result column="upd_name" property="updName"/>
+    <result column="admin_id" property="adminId"/>
+    <association property="frontUser" column="user_id"
+                 javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                 select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+    <collection property="dstList" ofType="com.github.wxiaoqi.security.common.entity.admin.UserOfferInfo"
+                column="src_symbol"
+                select="com.github.wxiaoqi.security.common.mapper.admin.UserOfferInfoMapper.selectOfferInfoBySrcSymbol"/>
+
+</resultMap>
+
+
+
+    <resultMap id="BaseResultMap2" type="com.github.wxiaoqi.security.common.entity.admin.UserOfferInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <!--<result column="user_id" property="userId"  />-->
+        <result column="src_symbol" property="srcSymbol"/>
+        <result column="dst_symbol" property="dstSymbol"/>
+        <result column="order_price" property="orderPrice"/>
+        <result column="order_volume" property="orderVolume"/>
+        <result column="remain_volume" property="remainVolume"/>
+        <result column="symbol" property="symbol"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="crt_time" property="crtTime"/>
+        <result column="crt_name" property="crtName"/>
+        <result column="upd_time" property="updTime"/>
+        <result column="upd_name" property="updName"/>
+        <result column="admin_id" property="adminId"/>
+        <association property="frontUser" column="user_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                     select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+
+    </resultMap>
+
+    <insert id="insertOfferInfo" parameterType="com.github.wxiaoqi.security.common.entity.admin.UserOfferInfo">
+    insert into user_offer_info (id,src_symbol,dst_symbol,order_price,order_volume,remain_volume,status,remark,crt_time,crt_name,upd_time,upd_name,admin_id)
+    values (#{id},#{srcSymbol},#{dstSymbol},#{orderPrice},#{orderVolume},#{remainVolume},#{status},#{remark},#{crtTime},#{crtName},#{updTime},#{updName},#{adminId})
+  </insert>
+    <update id="updateOfferInfo" parameterType="com.github.wxiaoqi.security.common.entity.admin.UserOfferInfo">
+    update user_offer_info
+    set order_price=#{orderPrice},
+        user_id=#{frontUser.id},
+        order_volume=#{orderVolume},
+        remain_volume=#{remainVolume},
+        remark=#{remark},
+        status=#{status},
+        crt_time=#{crtTime},
+        crt_name=#{crtName},
+        upd_time=#{updTime},
+        upd_name=#{updName}
+        where id=#{id}
+  </update>
+    <select id="selectUserOffer" resultMap="BaseResultMap">
+        select * from  user_offer_info
+        where id =#{id} for update
+    </select>
+    <select id="pageQuery" resultMap="BaseResultMap">
+        select * from user_offer_info
+        <where>
+            <if test="cm.dstSymbol != null and com.dstSymbol!=''">
+                dst_symbol=#{cm.dstSymbol}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectOfferInfoBySymbol" resultType="java.lang.Integer">
+        select COUNT(0) from user_offer_info
+        <where>
+            <if test="cm.srcSymbol!=null and cm.srcSymbol !=''">
+                and ( src_symbol =#{cm.srcSymbol} or dst_symbol=#{cm.srcSymbol})
+            </if>
+            <if test="cm.dstSymbol !=null and cm.dstSymbol !=''">
+                and ( src_symbol =#{cm.dstSymbol} or dst_symbol=#{cm.dstSymbol})
+            </if>
+            <if test="cm.status !=null and cm.status !=''">
+                and status=#{cm.status}
+            </if>
+        </where>
+    </select>
+    <select id="selectOfferInfoBySrcSymbol" resultType="java.lang.String">
+        select dst_symbol from user_offer_info where src_symbol=#{srcSymbol}
+    </select>
+    <select id="listSrcSymbol" resultMap="BaseResultMap">
+         select * from user_offer_info where status=1  GROUP BY dst_symbol
+    </select>
+
+    <select id="selectOneForUpdate" resultMap="BaseResultMap">
+         select * from user_offer_info  where src_symbol =#{cm.srcSymbol} and dst_symbol=#{cm.dstSymbol} for update
+    </select>
+
+    <select id="selectCustomPage" resultMap="BaseResultMap2">
+        SELECT uoi.* FROM
+        user_offer_info AS uoi
+        LEFT JOIN base_user AS bu ON uoi.admin_id = bu.id
+        LEFT JOIN front_user AS fu ON fu.id = uoi.user_id
+        <where>
+            <if test="cm.dstSymbol !=null and cm.dstSymbol!= ''">
+                and uoi.dst_symbol=#{cm.dstSymbol}
+            </if>
+            <if test="cm.exchangeId !=null and cm.exchangeId !=''">
+                and bu.top_parent_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.keyword!=null and cm.keyword !=''">
+                and (fu.email like CONCAT('%',#{cm.keyword},'%') or fu.user_name like CONCAT('%',#{cm.keyword},'%') or
+                fu.mobile like CONCAT('%',#{cm.keyword},'%'))
+            </if>
+        </where>
+    </select>
+
+</mapper>

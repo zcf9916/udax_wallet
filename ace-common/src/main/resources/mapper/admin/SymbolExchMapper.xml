@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.SymbolExchMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.SymbolExch" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"  />
+    <result column="exch_id" property="exchId"  />
+    <result column="symbol_id" property="symbolId"  />
+    <result column="crt_time" property="crtTime" />
+    <result column="crt_name" property="crtName"  />
+    <result column="upd_time" property="updTime" />
+    <result column="upd_name" property="updName"  />
+    <result column="symbol" property="symbol"  />
+    <result column="freed_number" property="freedNumber"  />
+    <result column="freed_cycle" property="freedCycle"  />
+    <result column="has_lock" property="hasLock"  />
+  </resultMap>
+
+    <resultMap id="BaseResultMap2" type="com.github.wxiaoqi.security.common.vo.SymbolCurrencyCharge">
+        <id column="id" property="id"  />
+        <result column="symbol" property="symbol"  />
+        <result column="protocol_type" property="protocolType"/>
+        <result column="is_show" property="isShow"/>
+        <result column="spread" property="spread"/>
+        <association property="tradeCharge" column="trade_charge_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.CfgChargeTemplate"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.CfgChargeTemplateMapper.selectByPrimaryKey"/>
+        <association property="dcWithdrawCharge" column="dc_withdraw_charge_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.CfgChargeTemplate"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.CfgChargeTemplateMapper.selectByPrimaryKey"/>
+        <association property="ltWithdrawCharge" column="lt_withdraw_charge_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.CfgChargeTemplate"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.CfgChargeTemplateMapper.selectByPrimaryKey"/>
+
+
+    </resultMap>
+
+
+  <select id="selectSymbolAndChange" resultMap="BaseResultMap2">
+    SELECT
+        bs.id AS id,
+        bs.symbol AS symbol,
+        bs.is_show as is_show,
+        bs.protocol_type as protocol_type,
+        ccc.spread AS spread,
+        ccc.trade_charge_id AS trade_charge_id,
+        ccc.dc_withdraw_charge_id AS dc_withdraw_charge_id,
+        ccc.lt_withdraw_charge_id AS lt_withdraw_charge_id
+    FROM
+        basic_symbol AS bs
+    LEFT JOIN cfg_currency_charge AS ccc  ON bs.id=ccc.`basic_symbol_id`
+    AND ccc.exch_id = #{cm.exchId}
+    ORDER BY symbol
+  </select>
+    <select id="getLockSymbolList" resultMap="BaseResultMap">
+        SELECT * FROM symbol_exch
+        <where>
+            <if test="exchId !=null and exchId >0">
+                and exch_id=#{exchId}
+            </if>
+            <if test="hasLock !=null and hasLock !=''">
+                and has_lock =#{hasLock}
+            </if>
+        </where>
+        GROUP BY symbol
+    </select>
+
+
+</mapper>

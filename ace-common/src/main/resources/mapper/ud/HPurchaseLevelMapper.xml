@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.ud.HPurchaseLevelMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.ud.HPurchaseLevel" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" />
+    <result column="name" property="name"  />
+    <result column="amount" property="amount"  />
+    <result column="trigger_num" property="triggerNum" />
+    <result column="match_num" property="matchNum" />
+    <result column="amount_limit" property="amountLimit"  />
+    <result column="interest" property="interest"  />
+    <result column="is_open" property="isOpen"  />
+    <result column="run_time" property="runTime" />
+    <result column="wait_time" property="waitTime" />
+    <result column="earliest_start_time" property="earliestStartTime" />
+    <result column="crt_time" property="crtTime"/>
+    <result column="crt_name" property="crtName"/>
+    <result column="upd_time" property="updTime"/>
+    <result column="upd_name" property="updName"/>
+    <result column="exch_id" property="exchId"/>
+    <result column="exchName" property="exchName"/>
+    <result column="level" property="level"/>
+    <result column="desp" property="desp"/>
+  </resultMap>
+
+
+  <select id="selectCustomPage" resultMap="BaseResultMap">
+    select hpl.*,wei.white_name as exchName from h_purchase_level  as hpl LEFT JOIN white_exch_info as wei on hpl.exch_id = wei.id
+    <where>
+      <if test="cm.name !=null and cm.name !=''">
+        and  hpl.name like CONCAT('%',#{cm.name},'%')
+      </if>
+      <if test="cm.isOpen!=null and cm .isOpen !='' ">
+        and  hpl.is_open =#{cm.isOpen}
+      </if>
+      <if test="cm.exchId !=null and cm.exchId !=''">
+        and hpl.exch_id =#{cm.exchId}
+      </if>
+    </where>
+  </select>
+</mapper>

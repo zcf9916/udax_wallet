@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.lock.UserSymbolLockDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.lock.UserSymbolLockDetail" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"  />
+    <result column="user_id" property="userId"  />
+    <result column="lock_id" property="lockId"  />
+    <result column="free_amount" property="freeAmount" />
+    <result column="update_time" property="updateTime" />
+    <result column="symbol" property="symbol" />
+    <result column="create_time" property="createTime" />
+    <result column="is_free" property="isFree" />
+    <result column="free_type" property="freeType" />
+    <result column="free_by" property="freeBy"  />
+    <result column="version" property="version" />
+    <result column="user_name" property="frontUser.userName" />
+    <result column="email" property="frontUser.email" />
+    <result column="mobile" property="frontUser.mobile" />
+  </resultMap>
+
+  <insert id="insertList" parameterType="java.util.List">
+    insert into user_symbol_lock_detail
+    (
+    user_id,lock_id,free_amount,symbol,create_time,is_free,free_type,version
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.userId},
+      #{item.lockId},
+      #{item.freeAmount},
+      #{item.symbol},
+      #{item.createTime},
+      #{item.isFree},
+      #{item.freeType},
+      #{item.version}
+      )
+    </foreach>
+  </insert>
+
+  <select id="selectCustomPage" resultMap="BaseResultMap">
+    SELECT  usl.* ,
+    fu.user_name as user_name,
+    fu.email as email,
+    fu.mobile as mobile
+    FROM  user_symbol_lock_detail AS usl
+    LEFT  JOIN  front_user AS fu ON fu.id =usl.user_id
+    LEFT JOIN front_user_info as fui on  fui.user_id=usl.user_id
+    <where>
+
+      <if test="cm.isFree !=null and cm.isFree !=''">
+        and usl.is_free =#{cm.isFree}
+      </if>
+
+      <if test="cm.symbol !=null and cm.symbol !=''">
+        and usl.symbol =#{cm.symbol}
+      </if>
+      <if test="cm.keyword != null and cm.keyword !='' ">
+        and (fu.email like CONCAT('%',#{cm.keyword},'%')
+        or fu.user_name like CONCAT('%',#{cm.keyword},'%')
+        or fu.mobile like CONCAT('%',#{cm.keyword},'%')  )
+      </if>
+      <if test="cm.exchangeId !=null and cm.exchangeId !=''">
+        and fui.exchange_id =#{cm.exchangeId}
+      </if>
+    </where>
+    ORDER BY user_id
+  </select>
+
+</mapper>

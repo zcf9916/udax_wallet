@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.UserTransactionModelMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.UserTransactionModel">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="userId" property="userId"/>
+        <result column="id" property="id"/>
+        <result column="direction" property="direction"/>
+        <result column="symbol" property="symbol"/>
+        <result column="userAddress" property="userAddress"/>
+        <result column="rechargeAmount" property="rechargeAmount"/>
+        <result column="rechargeAmountTotal" property="rechargeAmountTotal"/>
+        <result column="transactionAmount" property="transactionAmount"/>
+        <result column="price" property="price"/>
+        <result column="transactionTotal" property="transactionTotal"/>
+        <result column="totalAmount" property="totalAmount"/>
+        <result column="expendAmount" property="expendAmount"/>
+        <association property="frontUser" column="user_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                     select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+    </resultMap>
+
+    <select id="queryRechargeTotal" resultMap="BaseResultMap">
+        SELECT
+        id AS id,
+        symbol,
+        user_address AS userAddress,
+        user_id AS userId,
+        SUM(recharge_amount) rechargeAmountTotal
+        FROM
+        front_recharge
+        <where>
+            <if test="cm.userId != null and cm.userId != ''">
+                and user_id=#{cm.userId}
+            </if>
+            <if test="cm.symbol != null and cm.symbol != ''">
+                and symbol=#{cm.symbol}
+            </if>
+        </where>
+        GROUP BY user_address ,symbol
+    </select>
+
+
+    <select id="queryRechargeDetail" resultMap="BaseResultMap">
+        SELECT
+        user_id,
+        symbol,
+        user_Address AS userAddress,
+        recharge_Amount AS rechargeAmount,
+        create_time AS updateTime
+        FROM
+        front_recharge
+        <where>
+            <if test="cm.userAddress != null and cm.userAddress != ''">
+                and user_address=#{cm.userAddress}
+            </if>
+            <if test="cm.userId != null and cm.userId != ''">
+                and user_id=#{cm.userId}
+            </if>
+            <if test="cm.rechargeAmount != null and cm.rechargeAmount != ''">
+                and recharge_amount=#{cm.rechargeAmount}
+            </if>
+            <if test="cm.symbol != null and cm.symbol != ''">
+                and symbol=#{cm.symbol}
+            </if>
+            <if test="cm.userAddress!=null and cm.userAddress!=''">
+                and user_address =#{cm.userAddress}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+
+    <select id="queryWithdrawTotal" resultMap="BaseResultMap">
+        SELECT
+        id AS id,
+        user_id AS userId,
+        symbol,
+        user_address AS userAddress,
+        SUM(trade_amount) transactionTotal
+        FROM
+        front_withdraw
+        <where>
+            <if test="cm.userAddress != null and cm.userAddress != ''">
+                and user_address=#{cm.userAddress}
+            </if>
+            <if test="cm.userId != null and cm.userId != ''">
+                and user_id=#{cm.userId}
+            </if>
+            <if test="cm.symbol != null and cm.symbol != ''">
+                and symbol like CONCAT('%',#{cm.symbol},'%')
+            </if>
+            <if test="cm.isStatus !=null and cm.isStatus !=''">
+                and status !=#{cm.isStatus}
+            </if>
+        </where>
+        GROUP BY symbol,user_address
+    </select>
+
+
+    <select id="selectUserWithdraw" resultMap="BaseResultMap">
+        SELECT
+        fw.symbol,
+        SUM(fw.trade_amount) transactionTotal,
+        SUM(fw.charge_amount) AS rechargeAmount
+        FROM
+        front_withdraw AS fw
+        LEFT JOIN front_user_info AS fui ON fw.user_id = fui.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND fw.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND fw.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+        GROUP BY fw.symbol order by fw.trade_amount desc LIMIT #{cm.limit}
+    </select>
+
+
+    <select id="selectUserRecharge" resultType="com.github.wxiaoqi.security.common.util.model.HomeVo">
+        SELECT
+        fr.symbol AS name,
+        SUM(fr.recharge_amount) AS value
+        FROM
+        front_recharge AS fr
+        LEFT JOIN front_user_info AS fui ON fr.user_id = fui.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND fr.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND fr.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+        GROUP BY fr.symbol order by fr.recharge_amount desc LIMIT #{cm.limit}
+    </select>
+
+
+    <select id="selectTotalAccount" resultType="com.github.wxiaoqi.security.common.util.model.HomeVo">
+        SELECT daa.symbol as name,SUM(daa.total_amount) as value from dc_asset_account as daa LEFT JOIN front_user_info
+        as
+        fui on daa.user_id =fui.user_id
+        <where>
+            <if test="exchangeId !=null and exchangeId !=''">
+                fui.exchange_id=#{exchangeId}
+            </if>
+        </where>
+        GROUP BY daa.symbol order by total_amount desc LIMIT 10
+    </select>
+
+
+    <select id="selectTotalTransfer" resultMap="BaseResultMap">
+        SELECT
+        t.symbol AS symbol,
+        SUM(amount) AS transactionTotal,
+        SUM(charge_amount) AS rechargeAmount
+        FROM
+        transfer_order AS t
+        LEFT JOIN front_user_info AS fui ON t.user_id = fui.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND t.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND t.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+        GROUP BY
+        t.symbol
+        ORDER BY
+        transactionTotal DESC
+        LIMIT #{cm.limit}
+    </select>
+
+
+    <select id="selectTotalWithdraw" resultMap="BaseResultMap">
+        SELECT
+        fw.symbol AS symbol,
+        SUM(fw.trade_amount) AS rechargeAmount,
+        SUM(fw.charge_amount) AS chargeAmount,
+        SUM(fw.arrival_amoumt) AS transactionAmount
+        FROM
+        front_withdraw AS fw
+        LEFT JOIN front_user_info AS fui ON fui.user_id = fw.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.symbol !=null and cm.symbol !=''">
+                and fw.symbol=#{cm.symbol}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND fw.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND fw.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+        GROUP BY fw.symbol
+    </select>
+
+
+    <select id="selectTotalRecharge" resultMap="BaseResultMap">
+        SELECT
+        fr.symbol AS symbol,
+        SUM(fr.recharge_amount) AS rechargeAmount
+        FROM
+        front_recharge AS fr
+        LEFT JOIN front_user_info AS fui ON fui.user_id = fr.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND fr.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND fr.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+            <if test="cm.status!= null and cm.status!=''">
+                and fr.status=#{cm.status}
+            </if>
+            <if test="cm.symbol !=null and cm.symbol !=''">
+                and fr.symbol=#{cm.symbol}
+            </if>
+        </where>
+        GROUP BY fr.symbol
+    </select>
+
+
+    <select id="selectTransferTotal" resultMap="BaseResultMap">
+        SELECT
+        t.symbol AS symbol,
+        SUM( t.amount) AS totalAmount,
+        SUM( t.charge_amount) AS chargeAmount,
+        SUM( t.arrival_amount) AS transactionAmount
+        FROM
+        transfer_order AS t
+        LEFT JOIN front_user_info AS fui ON t.user_id = fui.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.symbol !=null and cm.symbol !='' ">
+                and t.symbol =#{cm.symbol}
+            </if>
+            <if test="cm.status !=null and cm.status !='' ">
+                and t.status =#{cm.status}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND t.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND t.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+        GROUP BY
+        t.symbol
+    </select>
+
+    <!--查询所有收益汇总-->
+    <select id="selectTotalIncome" resultMap="BaseResultMap">
+        SELECT
+        t.charge_symbol AS symbol,
+        SUM( t.charge_amount) AS chargeAmount
+        FROM
+        dc_asset_account_log AS t
+        LEFT JOIN front_user_info AS fui ON t.user_id = fui.user_id
+        <where>
+            t.direction = 1 and t.charge_amount > 0
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.type !=null and cm.type !='' ">
+                and t.type =#{cm.type}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND t.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND t.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+        GROUP BY
+        t.charge_symbol
+    </select>
+
+    <!--收支汇总之充币区块链汇聚支出汇总-->
+    <select id="selectRechargeExpendTotal" resultMap="BaseResultMap">
+        SELECT
+        t.fee_symbol AS symbol,
+        SUM( t.recharge_fee) AS expendAmount
+        FROM
+        front_recharge AS t
+        LEFT JOIN front_user_info AS fui ON t.user_id = fui.user_id
+        <where>
+            t.status = 0
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND t.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND t.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+        GROUP BY
+        t.fee_symbol
+    </select>
+
+    <!--收支汇总之提币区块链汇聚支出汇总-->
+    <select id="selectWithdrawExpendTotal" resultMap="BaseResultMap">
+        SELECT
+        t.fee_symbol AS symbol,
+        SUM( t.withdraw_fee) AS expendAmount
+        FROM
+        front_withdraw AS t
+        LEFT JOIN front_user_info AS fui ON t.user_id = fui.user_id
+        <where>
+            t.status = 5
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND t.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND t.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+        </where>
+        GROUP BY
+        t.fee_symbol
+    </select>
+
+
+    <select id="selectTotalMchTrade" resultMap="BaseResultMap">
+        SELECT
+        mtd.symbol AS symbol,
+        SUM(mtd.amount) AS transactionTotal,
+        SUM(mtd.charge_amount) AS rechargeAmount
+        FROM   mch_trade_detail AS mtd
+        LEFT JOIN front_user_info AS fui ON mtd.user_id = fui.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND mtd.order_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND mtd.order_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+            <if test="cm.status!= null and cm.status!=''">
+                and mtd.status=#{cm.status}
+            </if>
+            <if test="cm.symbol !=null and cm.symbol !=''">
+                and mtd.symbol=#{cm.symbol}
+            </if>
+        </where>
+        GROUP BY
+        mtd.symbol
+        ORDER BY
+        transactionTotal DESC
+        LIMIT #{cm.limit}
+    </select>
+
+
+    <select id="queryTransferOrder" resultMap="BaseResultMap">
+        SELECT
+        id as id ,
+        user_id AS userId,
+        symbol AS symbol,
+        direction AS direction,
+        SUM(amount) AS totalAmount,
+        SUM(charge_amount) AS chargeAmount
+        FROM dc_asset_account_log
+        <where>
+            <if test="cm.userId != null and cm.userId !=''">
+                and user_id =#{cm.userId}
+            </if>
+            <if test="cm.types != null and cm.types.size > 0">
+                and type in
+                <foreach collection="cm.types" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY  symbol,direction
+    </select>
+
+</mapper>

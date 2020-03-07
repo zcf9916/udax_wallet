@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.fund.FundStrategyMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.fund.FundStrategy" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="exchange_id" property="exchangeId" jdbcType="BIGINT" />
+    <result column="strategy_type" property="strategyType" jdbcType="VARCHAR" />
+    <result column="strategy_info" property="strategyInfo" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="enable" property="enable" jdbcType="TINYINT" />
+  </resultMap>
+</mapper>

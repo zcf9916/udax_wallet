@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.CfgCurrencyChargeMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.CfgCurrencyCharge">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="real_user_level" property="realUserLevel"/>
+        <result column="currency_type" property="currencyType"/>
+        <result column="symbol" property="symbol"/>
+        <result column="crt_time" property="crtTime"/>
+        <result column="crt_name" property="crtName"/>
+        <result column="upd_time" property="updTime"/>
+        <result column="upd_name" property="updName"/>
+        <result column="spread" property="spread"/>
+        <result column="protocol_type" property="protocolType"/>
+        <result column="is_show" property="isShow"/>
+        <result column="remark" property="remark"/>
+        <result column="exch_id" property="exchId"/>
+        <association property="tradeCharge" column="trade_charge_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.CfgChargeTemplate"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.CfgChargeTemplateMapper.selectByPrimaryKey"/>
+        <association property="dcWithdrawCharge" column="dc_withdraw_charge_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.CfgChargeTemplate"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.CfgChargeTemplateMapper.selectByPrimaryKey"/>
+        <association property="ltWithdrawCharge" column="lt_withdraw_charge_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.CfgChargeTemplate"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.CfgChargeTemplateMapper.selectByPrimaryKey"/>
+        <association property="basicSymbol" column="basic_symbol_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.BasicSymbol"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.BasicSymbolMapper.selectByPrimaryKey"/>
+    </resultMap>
+    <insert id="insertCharge" parameterType="com.github.wxiaoqi.security.common.entity.admin.CfgCurrencyCharge">
+      insert into cfg_currency_charge(id,currency_type,symbol,trade_charge_id,dc_withdraw_charge_id,lt_withdraw_charge_id,crt_time,crt_name,
+      remark,basic_symbol_id,upd_time,upd_name,spread,exch_id,protocol_type,is_show)
+      values
+      (#{id},#{currencyType},#{symbol},#{tradeCharge.id},#{dcWithdrawCharge.id},#{ltWithdrawCharge.id},
+      #{crtTime},#{crtName},#{remark},#{basicSymbol.id},#{updTime},#{updName},#{spread},#{exchId},#{protocolType},#{isShow})
+  </insert>
+
+    <update id="updateCharge" parameterType="com.github.wxiaoqi.security.common.entity.admin.CfgCurrencyCharge">
+      update cfg_currency_charge
+      set trade_charge_id =#{tradeCharge.id},
+          dc_withdraw_charge_id =#{dcWithdrawCharge.id},
+          lt_withdraw_charge_id =#{ltWithdrawCharge.id},
+          remark=#{remark},
+          crt_time=#{crtTime},
+          crt_name=#{crtName},
+          upd_time=#{updTime},
+          upd_name=#{updName},
+          spread=#{spread},
+          is_show=#{isShow},
+          protocol_type=#{protocolType}
+          where id =#{id}
+    </update>
+    <delete id="deleteByBasicId">
+        DELETE FROM cfg_currency_charge WHERE basic_symbol_id = #{id}
+    </delete>
+
+    <select id="selectByChargeTemplate" resultMap="BaseResultMap">
+      SELECT * from cfg_currency_charge where trade_charge_id =#{id} or dc_withdraw_charge_id=#{id} or lt_withdraw_charge_id = #{id};
+    </select>
+
+    <select id="selectChargeByBasisId" resultMap="BaseResultMap">
+      select * from cfg_currency_charge
+      <where>
+          <if test="cm.symbolId  !=null and cm.symbolId !=''">
+              and basic_symbol_id=#{cm.symbolId}
+          </if>
+          <if test="cm.exchId != null and cm.exchId!=''">
+              and exch_id=#{cm.exchId}
+          </if>
+      </where>
+    </select>
+
+    <select id="selectChargeBySymbol" resultMap="BaseResultMap">
+     select * from cfg_currency_charge where currency_code =#{symbol}
+  </select>
+
+    <select id="selectChargeList" resultMap="BaseResultMap">
+        select * from cfg_currency_charge
+    </select>
+
+    <select id="selectByBasisId" resultMap="BaseResultMap">
+      select * from cfg_currency_charge where basic_symbol_id =#{id} and exch_id = -1
+    </select>
+</mapper>

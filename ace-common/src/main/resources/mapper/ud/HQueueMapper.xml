@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.ud.HQueueMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.ud.HQueue" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" property="id"/>
+    <result column="user_id" property="userId" />
+    <result column="status" property="status" />
+    <result column="order_no" property="orderNo" />
+    <result column="level_name" property="levelName"  />
+    <result column="level_id" property="levelId" />
+    <result column="lock_amount" property="lockAmount" />
+    <result column="symbol" property="symbol"  />
+    <result column="last_order_no" property="lastOrderNo"  />
+    <result column="create_time" property="createTime" />
+    <result column="waitTime" property="waitTime"/>
+    <result column="userName" property="userName"/>
+    <result column="exchName" property="exchName"/>
+  </resultMap>
+
+
+
+  <!-- 联合 -->
+  <resultMap id="udUnionResultMap"  type="com.github.wxiaoqi.security.common.entity.ud.HQueue" >
+    <result column="id" property="id"/>
+    <result column="user_id" property="userId" />
+    <result column="status" property="status" />
+    <result column="order_no" property="orderNo" />
+    <result column="level_name" property="levelName"  />
+    <result column="level_id" property="levelId" />
+    <result column="lock_amount" property="lockAmount" />
+    <result column="symbol" property="symbol"  />
+    <result column="last_order_no" property="lastOrderNo"  />
+    <result column="create_time" property="createTime" />
+    <result column="waitTime" property="waitTime"/>
+    <association property="orderDetail" column="order_no" columnPrefix="o_" javaType="com.github.wxiaoqi.security.common.entity.ud.HOrderDetail" >
+      <id column="id" property="id"/>
+      <result column="user_id" property="userId" />
+      <result column="order_no" property="orderNo" />
+      <result column="level_name" property="levelName" />
+      <result column="level_id" property="levelId"/>
+      <result column="lock_amount" property="lockAmount" />
+      <result column="create_time" property="createTime" />
+      <result column="purchase_time" property="purchaseTime"/>
+      <result column="symbol" property="symbol"/>
+      <result column="settle_day" property="settleDay"/>
+      <result column="current_settle_day" property="currentSettleDay"/>
+      <result column="status" property="status"/>
+      <result column="last_order_no" property="lastOrderNo"/>
+      <result column="interest" property="interest"  />
+      <result column="profit" property="profit"/>
+      <result column="charge" property="charge"/>
+    </association>
+  </resultMap>
+
+  <select id="selectQueueList" resultMap="udUnionResultMap" >
+    SELECT q.*,o.settle_day as o_settle_day,o.status as o_status ,o.profit as o_profit,o.charge as o_charge
+    FROM wallet.h_queue q left join wallet.h_order_detail o  on o.order_no = q.order_no
+    where q.user_id = #{cm.userId}
+    <if test="cm.beginDate != null and cm.beginDate != ''">
+      AND q.create_time <![CDATA[>=]]> #{cm.beginDate}
+    </if>
+    <if test="cm.endDate != null and cm.endDate != ''">
+      AND q.create_time <![CDATA[<]]>#{cm.endDate}
+    </if>
+    order by q.id desc
+  </select>
+
+
+
+
+
+  <select id="selectCustomPage" resultMap="BaseResultMap">
+      SELECT
+      hq.id AS id,
+      fu.user_name AS userName,
+      hq.order_no,
+      hq.level_name,
+      hq.create_time,
+      hq.status,
+      hpl.wait_time as waitTime,
+      wei.white_name as exchName
+    FROM h_queue hq
+      LEFT JOIN front_user fu ON hq.user_id = fu.id
+      LEFT JOIN h_user_info hui ON hq.user_id = hui.user_id
+      LEFT JOIN h_purchase_level hpl ON hq.level_id = hpl.id
+      LEFT JOIN white_exch_info as wei on hui.exchange_id =wei.id
+      <where>
+        <if test="cm.levelId !=null and cm.levelId !='' ">
+          and hq.level_id = #{cm.levelId}
+        </if>
+        <if test="cm.exchangeId != null and cm.exchangeId !='' and cm.exchangeId != -1">
+          and hui.exchange_id = #{cm.exchangeId}
+        </if>
+        <if test="cm.status !=null and cm.status !='' ">
+          and hq.status = #{cm.status}
+        </if>
+        <if test="cm.username != null and cm.username !='' ">
+          and (fu.email like CONCAT('%',#{cm.username},'%')  or fu.mobile like CONCAT('%',#{cm.username},'%'))
+        </if>
+        <if test="cm.beginDate != null and cm.beginDate != ''">
+          AND hq.create_time <![CDATA[>=]]> #{cm.beginDate}
+        </if>
+        <if test="cm.endDate != null and cm.endDate != ''">
+          AND hq.create_time <![CDATA[<]]>#{cm.endDate}
+        </if>
+      </where>
+      ORDER BY hq.id DESC
+    </select>
+
+    <select id="selectForUpdate" resultMap="BaseResultMap">
+         select * from h_queue where order_no = #{orderNo}   for update
+    </select>
+
+    <select id="getMatchList" resultMap="BaseResultMap">
+         select * from h_queue where status = #{cm.status} and level_id = #{cm.levelId} limit #{cm.limit}
+    </select>
+
+
+
+</mapper>

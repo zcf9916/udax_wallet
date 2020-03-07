@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.merchant.MchPayTokenMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.merchant.MchPayToken" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="detail_id" property="detailId" jdbcType="BIGINT" />
+    <result column="symbol" property="symbol" jdbcType="VARCHAR" />
+    <result column="amount" property="amount"/>
+  </resultMap>
+  
+  <insert id="insertList" parameterType="java.util.List">
+    insert into mch_pay_token
+    (
+    detail_id,symbol,amount
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.detailId},
+      #{item.symbol},
+      #{item.amount}
+      )
+    </foreach>
+  </insert>
+</mapper>

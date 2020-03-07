@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.UserMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.User">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="name" property="name"/>
+        <result column="birthday" property="birthday"/>
+        <result column="address" property="address"/>
+        <result column="mobile_phone" property="mobilePhone"/>
+        <result column="tel_phone" property="telPhone"/>
+        <result column="email" property="email"/>
+        <result column="sex" property="sex" />
+        <result column="type" property="type" />
+        <result column="status" property="status" />
+        <result column="description" property="description"/>
+        <result column="crt_time" property="crtTime"  />
+        <result column="crt_name" property="crtName" />
+        <result column="upd_time" property="updTime"  />
+        <result column="upd_name" property="updName" />
+        <result column="dept_id" property="deptId"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="group_id" property="groupId"/>
+        <result column="top_parent_id" property="topParentId"/>
+        <association property="group" column="group_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.Group"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.GroupMapper.selectByPrimaryKey"/>
+    </resultMap>
+    <select id="selectMemberByGroupId" resultMap="BaseResultMap">
+    select u.* from base_user u
+    left join  base_group_member gm
+    on gm.user_id = u.id where gm.group_id = #{groupId}
+  </select>
+    <select id="selectLeaderByGroupId" resultMap="BaseResultMap">
+    select u.* from base_user u
+    left join  base_group_leader gm
+    on gm.user_id = u.id where gm.group_id = #{groupId}
+  </select>
+    <select id="selectUserByGroupId" resultMap="BaseResultMap">
+    select * from base_user where group_id =#{groupId}
+  </select>
+    <select id="selectUserByQuery" resultMap="BaseResultMap">
+        select  *  from base_user
+        <where>
+            <if test="cm.ids !=null and cm.ids.size> 0">
+                and group_id in
+                <foreach collection="cm.ids" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cm.name != null and cm.name !=''">
+              and  name =#{cm.name}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.front.FrontUser" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" />
+    <result column="user_name" property="userName"  />
+    <result column="user_type" property="userType"  />
+    <result column="user_level" property="userLevel"  />
+    <result column="user_status" property="userStatus"  />
+    <result column="user_pwd" property="userPwd"  />
+    <result column="trade_pwd" property="tradePwd"  />
+    <result column="salt" property="salt"  />
+    <result column="uid" property="uid"  />
+    <result column="email" property="email"  />
+    <result column="mobile" property="mobile"  />
+    <result column="login_err_times" property="loginErrTimes" />
+    <result column="login_ip" property="loginIp"  />
+    <result column="create_time" property="createTime"  />
+    <result column="update_time" property="updateTime"  />
+    <result column="remark" property="remark"  />
+  </resultMap>
+  <!-- 联合 -->
+  <resultMap id="unionResultMap"  type="com.github.wxiaoqi.security.common.entity.front.FrontUser" >
+    <id column="id" property="id" />
+    <result column="user_name" property="userName"  />
+    <result column="user_type" property="userType"  />
+    <result column="user_level" property="userLevel"  />
+    <result column="user_status" property="userStatus"  />
+    <result column="user_pwd" property="userPwd"  />
+    <result column="trade_pwd" property="tradePwd"  />
+    <result column="salt" property="salt"  />
+    <result column="uid" property="uid"  />
+    <result column="email" property="email"  />
+    <result column="mobile" property="mobile"  />
+    <result column="login_err_times" property="loginErrTimes" />
+    <result column="login_ip" property="loginIp"  />
+    <result column="create_time" property="createTime"  />
+    <result column="update_time" property="updateTime"  />
+    <result column="remark" property="remark"  />
+    <association property="userInfo" column="user_id"   javaType="com.github.wxiaoqi.security.common.entity.front.FrontUserInfo" >
+      <id column="id" property="id" />
+      <result column="user_id" property="userId" />
+      <result column="nick_name" property="nickName"  />
+      <result column="id_card" property="idCard"  />
+      <result column="first_name" property="firstName"  />
+      <result column="real_name" property="realName"  />
+      <result column="is_valid" property="isValid"  />
+      <result column="bind_domain" property="bindDomain"  />
+      <result column="recommond_code" property="recommondCode"  />
+      <result column="parent_id" property="parentId" />
+      <result column="top_id" property="topId" />
+      <result column="level_code" property="levelCode"  />
+      <result column="visit_code" property="visitCode"  />
+      <result column="exchange_id" property="exchangeId" />
+      <result column="is_withdraw" property="isWithdraw"  />
+      <result column="is_valid_phone" property="isValidPhone"  />
+      <result column="is_valid_email" property="isValidEmail"  />
+      <result column="location_code" property="locationCode"  />
+      <result column="location_country" property="locationCountry"  />
+      <result column="level" property="level" />
+      <result column="id_card_img_zm" property="idCardImgZm" />
+      <result column="id_card_img_fm" property="idCardImgFm" />
+      <result column="portrait" property="portrait"  />
+    </association>
+
+  </resultMap>
+
+  <!-- 联合 -->
+  <resultMap id="udUnionResultMap"  type="com.github.wxiaoqi.security.common.entity.front.FrontUser" >
+    <id column="id" property="id" />
+    <result column="user_name" property="userName"  />
+    <result column="user_type" property="userType"  />
+    <result column="user_level" property="userLevel"  />
+    <result column="user_status" property="userStatus"  />
+    <result column="user_pwd" property="userPwd"  />
+    <result column="trade_pwd" property="tradePwd"  />
+    <result column="salt" property="salt"  />
+    <result column="uid" property="uid"  />
+    <result column="email" property="email"  />
+    <result column="mobile" property="mobile"  />
+    <result column="login_err_times" property="loginErrTimes" />
+    <result column="login_ip" property="loginIp"  />
+    <result column="create_time" property="createTime"  />
+    <result column="update_time" property="updateTime"  />
+    <result column="remark" property="remark"  />
+    <association property="hUserInfo" column="user_id"   javaType="com.github.wxiaoqi.security.common.entity.ud.HUserInfo" >
+      <result column="id" property="id"/>
+      <result column="user_id" property="userId"/>
+      <result column="status" property="status"/>
+      <result column="is_valid" property="isValid"/>
+      <result column="recommond_code" property="recommondCode"/>
+      <result column="parent_id" property="parentId"/>
+      <result column="top_id" property="topId"/>
+      <result column="level_code" property="levelCode"/>
+      <result column="visit_code" property="visitCode"/>
+      <result column="exchange_id" property="exchangeId"/>
+      <result column="level" property="level"/>
+      <result column="direct_child" property="directChild"/>
+      <result column="child_invest" property="childInvest"/>
+      <result column="add_amount" property="addAmount"/>
+      <result column="add_node_amount" property="addNodeAmount"/>
+      <result column="all_child" property="allChild"/>
+      <result column="total_amount" property="totalAmount"/>
+      <result column="create_time" property="createTime"/>
+    </association>
+
+  </resultMap>
+
+  <!-- 联合 -->
+  <resultMap id="casinoUnionResultMap"  type="com.github.wxiaoqi.security.common.entity.front.FrontUser" >
+    <id column="id" property="id" />
+    <result column="user_name" property="userName"  />
+    <result column="user_type" property="userType"  />
+    <result column="user_level" property="userLevel"  />
+    <result column="user_status" property="userStatus"  />
+    <result column="user_pwd" property="userPwd"  />
+    <result column="trade_pwd" property="tradePwd"  />
+    <result column="salt" property="salt"  />
+    <result column="uid" property="uid"  />
+    <result column="email" property="email"  />
+    <result column="mobile" property="mobile"  />
+    <result column="login_err_times" property="loginErrTimes" />
+    <result column="login_ip" property="loginIp"  />
+    <result column="create_time" property="createTime"  />
+    <result column="update_time" property="updateTime"  />
+    <result column="remark" property="remark"  />
+    <result column="ul_id" property="casinoUserInfo.id" jdbcType="BIGINT" />
+    <result column="casino_name" property="casinoUserInfo.casinoName" jdbcType="CHAR" />
+    <result column="settle_type" property="casinoUserInfo.settleType" jdbcType="TINYINT" />
+    <result column="user_id" property="casinoUserInfo.userId" jdbcType="BIGINT" />
+    <result column="recommond_code" property="casinoUserInfo.recommondCode" jdbcType="VARCHAR" />
+    <result column="parent_id" property="casinoUserInfo.parentId" jdbcType="BIGINT" />
+    <result column="top_id" property="casinoUserInfo.topId" jdbcType="BIGINT" />
+    <result column="visit_code" property="casinoUserInfo.visitCode" jdbcType="CHAR" />
+    <result column="exchange_id" property="casinoUserInfo.exchangeId" jdbcType="BIGINT" />
+    <result column="level" property="casinoUserInfo.level" jdbcType="INTEGER" />
+    <result column="direct_child" property="casinoUserInfo.directChild" jdbcType="INTEGER" />
+    <result column="all_child" property="casinoUserInfo.allChild" jdbcType="INTEGER" />
+    <result column="total_amount" property="casinoUserInfo.totalAmount" jdbcType="DECIMAL" />
+    <result column="create_time" property="casinoUserInfo.createTime" jdbcType="TIMESTAMP" />
+    <result column="is_valid" property="casinoUserInfo.isValid" jdbcType="TINYINT" />
+    <result column="type" property="casinoUserInfo.type" jdbcType="TINYINT" />
+    <result column="status" property="casinoUserInfo.status" jdbcType="TINYINT" />
+
+  </resultMap>
+
+  <select id="selectCasinoUionUserInfo" resultMap="casinoUnionResultMap">
+    select fu.*,ul.id as ul_id ,ul.* from front_user as fu right join casino_user_info as ul on fu.id = ul.user_id
+    <where>
+      <if test="cm.userName != null and cm.userName != ''">
+        (fu.email = #{cm.userName}
+        or fu.mobile = #{cm.userName}
+        or fu.user_name = #{cm.userName})
+      </if>
+      <if test="cm.userId != null and cm.userId > 0">
+        fu.id = #{cm.userId}
+      </if>
+    </where>
+  </select>
+
+
+
+
+
+  <select id="selectUDUionUserInfo" resultMap="udUnionResultMap">
+    select fu.*,ul.* from front_user as fu right join h_user_info as ul on fu.id = ul.user_id
+    <where>
+      <if test="cm.userName != null and cm.userName != ''">
+        (fu.email = #{cm.userName}
+        or fu.mobile = #{cm.userName}
+        or fu.user_name = #{cm.userName})
+      </if>
+      <if test="cm.userId != null and cm.userId > 0">
+        fu.id = #{cm.userId}
+      </if>
+    </where>
+  </select>
+
+
+
+  <select id="selectUnionUserInfo" resultMap="unionResultMap">
+    select fu.*,ul.* from front_user as fu left join front_user_info as ul on fu.id = ul.user_id
+    <where>
+      <if test="cm.userName != null and cm.userName != ''">
+        (fu.email = #{cm.userName}
+        or fu.mobile = #{cm.userName}
+        or fu.user_name = #{cm.userName})
+      </if>
+      <if test="cm.userId != null and cm.userId > 0">
+        fu.id = #{cm.userId}
+      </if>
+    </where>
+  </select>
+
+
+
+
+
+</mapper>

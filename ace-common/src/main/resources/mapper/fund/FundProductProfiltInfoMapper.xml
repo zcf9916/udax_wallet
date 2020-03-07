@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.fund.FundProductProfiltInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.fund.FundProductProfiltInfo" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="exchange_id" property="exchangeId" jdbcType="BIGINT" />
+    <result column="fund_id" property="fundId" jdbcType="BIGINT" />
+    <result column="symbol" property="symbol" jdbcType="VARCHAR" />
+    <result column="curr_profilt" property="currProfilt" jdbcType="DECIMAL" />
+    <!--<result column="curr_one_worth" property="currOneWorth" jdbcType="DECIMAL" />-->
+    <result column="year_profilt" property="yearProfilt" jdbcType="DECIMAL" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- 记录加行锁 -->
+  <select id="selectForUpdate" parameterType="java.util.Map" resultMap="BaseResultMap">
+	  select * from fund_product_profilt_info   where fund_id= #{cm.fund_id} for update
+  </select>
+
+</mapper>

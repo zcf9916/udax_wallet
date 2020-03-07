@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.casino.CasinoUserInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.casino.CasinoUserInfo" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="casino_name" property="casinoName" jdbcType="CHAR" />
+    <result column="settle_type" property="settleType" jdbcType="TINYINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="recommond_code" property="recommondCode" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="top_id" property="topId" jdbcType="BIGINT" />
+    <result column="visit_code" property="visitCode" jdbcType="CHAR" />
+    <result column="exchange_id" property="exchangeId" jdbcType="BIGINT" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="direct_child" property="directChild" jdbcType="INTEGER" />
+    <result column="all_child" property="allChild" jdbcType="INTEGER" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="is_valid" property="isValid" jdbcType="TINYINT" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="user_name" property="frontUser.userName" />
+    <result column="email" property="frontUser.email" />
+    <result column="mobile" property="frontUser.mobile" />
+  </resultMap>
+
+  <select id="selectCustomPage" resultMap="BaseResultMap">
+    select cui.*,
+    fu.user_name as user_name,
+    fu.email as email,
+    fu.mobile as mobile
+    from casino_user_info as cui left join  front_user as fu on fu.id = cui.user_id
+    <where>
+      <if test="cm.keyword != null and cm.keyword !='' ">
+        and (fu.email like CONCAT('%',#{cm.keyword},'%') or fu.user_name like CONCAT('%',#{cm.keyword},'%') or
+        fu.mobile like CONCAT('%',#{cm.keyword},'%') or cui.casino_name like CONCAT('%',#{cm.keyword},'%'))
+      </if>
+      <if test="cm.type !=null and cm.type!=''">
+        and cui.type =#{cm.type}
+      </if>
+    </where>
+  </select>
+</mapper>

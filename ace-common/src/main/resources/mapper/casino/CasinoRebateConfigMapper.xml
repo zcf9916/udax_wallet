@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.casino.CasinoRebateConfigMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.casino.CasinoRebateConfig">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="cms_rate" property="cmsRate" />
+        <result column="type" property="type"/>
+        <result column="exch_id" property="exchId"/>
+        <result column="remark" property="remark" />
+        <result column="enable" property="enable" />
+        <result column="exchName" property="exchName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+
+    <select id="selectCustomPage" resultMap="BaseResultMap">
+        select crc.*,wei.white_name as exchName from casino_rebate_config as crc
+        left join white_exch_info as wei on crc.exch_id =wei.id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId >0">
+                and crc.exch_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.type !=null and cm.type !=''">
+                and crc.type=#{cm.type}
+            </if>
+        </where>
+    </select>
+</mapper>

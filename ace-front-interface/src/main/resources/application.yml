@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: dev
+  servlet:
+   multipart:
+     maxFileSize: 5MB
+     maxRequestSize: 5MB
+server:
+  port: 8080
+  context-path: /
+  tomcat:
+    uri-encoding: UTF-8

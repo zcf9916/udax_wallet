@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.ValuationModeMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.ValuationMode" >
+    <id column="id" property="id"  />
+    <result column="dict_data_id" property="dictDataId"  />
+    <result column="exch_id" property="exchId"  />
+    <result column="default_symbol" property="defaultSymbol"  />
+  </resultMap>
+
+  <select id="cacheReturn"  resultType="com.github.wxiaoqi.security.common.vo.ValuationModeVo">
+      SELECT
+          vm.exch_id AS exchId,
+          bdd.dict_label AS dictLabel,
+          bdd.dict_value AS dictValue,
+          bdd.language_type as languageType,
+          vm.default_symbol as defaultSymbol
+      FROM
+          valuation_mode AS vm
+      LEFT JOIN base_dict_data AS bdd ON vm.dict_data_id = bdd.id
+  </select>
+
+    <select id="selectValuationMode" resultType="com.github.wxiaoqi.security.common.vo.ValuationModeVo">
+        SELECT
+        bdd.id AS id,
+        bdd.dict_label AS dictLabel,
+        bdd.dict_value AS dictValue,
+        bdd.language_type as languageType,
+        m.default_symbol AS defaultSymbol
+        FROM
+            base_dict_data AS bdd
+        LEFT JOIN valuation_mode AS m ON bdd.id = m.dict_data_id
+        AND m.exch_id =#{cm.exchId}
+        <where>
+            <if test="cm.dictType !=null and cm.dictType !=''">
+                and  bdd.dict_type =#{cm.dictType}
+            </if>
+            <if test="cm.languageType !=null and cm.languageType !=''">
+                and bdd.language_type =#{cm.languageType}
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.front.FrontTokenAddressMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.front.FrontTokenAddress" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" />
+    <result column="user_address" property="userAddress" />
+    <result column="user_id" property="userId"  />
+    <result column="symbol" property="symbol"  />
+    <result column="merchant_user" property="merchantUser"  />
+    <result column="create_time" property="createTime" />
+    <result column="enable" property="enable" />
+    <result column="proxy_code" property="proxyCode" />
+  </resultMap>
+
+</mapper>

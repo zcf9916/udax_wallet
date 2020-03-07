@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.DictDataMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.DictData">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="dict_id" property="dictId"/>
+        <result column="sort" property="sort"/>
+        <result column="dict_label" property="dictLabel"/>
+        <result column="dict_value" property="dictValue"/>
+        <result column="dict_type" property="dictType"/>
+        <result column="status" property="status"/>
+        <result column="language_type" property="languageType"/>
+        <result column="crt_time" property="crtTime"/>
+        <result column="upd_time" property="updTime"/>
+        <result column="upd_name" property="updName"/>
+        <result column="crt_name" property="crtName"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+    <select id="selectListData" resultMap="BaseResultMap">
+        select * from base_dict_data
+        <where>
+            <if test="type!=null and type!=''">
+                and dict_type =#{type}
+            </if>
+            <if test="language !=null and language != ''">
+                and language_type=#{language}
+            </if>
+        </where>
+    </select>
+
+    <select id="GroupDictData" resultMap="BaseResultMap">
+        SELECT dict_type FROM base_dict_data GROUP  BY dict_type;
+    </select>
+
+
+    <select id="selectCustomPage" resultMap="BaseResultMap">
+        select * from base_dict_data
+        <where>
+            <if test="cm.dictId !=null and cm.dictId !=''">
+                and dict_id=#{cm.dictId}
+            </if>
+            <if test="cm.dictType!=null and cm.dictType !=''">
+                and dict_type =#{cm.dictType}
+            </if>
+            <if test="cm.languageType !=null and cm.language_type !=''">
+                and language_type =#{cm.languageType}
+            </if>
+        </where>
+    </select>
+</mapper>

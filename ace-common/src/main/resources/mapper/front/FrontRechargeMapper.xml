@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.front.FrontRechargeMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.front.FrontRecharge">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="user_address" property="userAddress"/>
+        <result column="user_id" property="userId"/>
+        <result column="recharge_amount" property="rechargeAmount"/>
+        <result column="symbol" property="symbol"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="order_id" property="orderId"/>
+        <result column="block_order_id" property="blockOrderId"/>
+        <result column="fee_symbol" property="feeSymbol"/>
+        <result column="recharge_fee" property="rechargeFee"/>
+        <result column="proxy_code" property="proxyCode"/>
+        <result column="protocol_type" property="protocolType"/>
+        <result column="type" property="type"/>
+        <association property="frontUser" column="user_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                     select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+
+    </resultMap>
+
+    <select id="selectCustomPage" resultMap="BaseResultMap">
+        SELECT
+        fr.*
+        FROM
+        front_recharge AS fr
+        LEFT JOIN front_user AS fu ON fr.user_id = fu.id
+        LEFT JOIN front_user_info AS fui ON fui.user_id = fr.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !=''">
+              and  fui.exchange_id=#{cm.exchangeId}
+            </if>
+            <if test="cm.symbol!=null and cm.symbol !=''">
+                and fr.symbol =#{cm.symbol}
+            </if>
+            <if test="cm.keyword != null and cm.keyword !='' ">
+                and (fu.email like CONCAT('%',#{cm.keyword},'%') or fu.user_name like CONCAT('%',#{cm.keyword},'%') or
+                fu.mobile like CONCAT('%',#{cm.keyword},'%'))
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND fr.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND fr.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+            <if test="cm.status !=null and cm.status !=''">
+              and  fr.status=#{cm.status}
+            </if>
+            <if test="cm.orderId !=null and cm.orderId !=''">
+                and fr.order_id=#{cm.orderId}
+            </if>
+        </where>
+        ORDER BY fr.id DESC
+    </select>
+</mapper>

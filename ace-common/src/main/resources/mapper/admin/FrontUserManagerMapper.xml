@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.FrontUserManagerMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.FrontUserManager">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="userRealName" property="userRealName"/>
+        <result column="mobile" property="mobile"/>
+        <result column="email" property="email"/>
+        <result column="country" property="country"/>
+        <result column="countryCode" property="countryCode"/>
+        <result column="userType" property="userType"/>
+        <result column="isValid" property="isValid"/>
+        <result column="createTime" property="createTime"/>
+        <result column="mchStatus" property="mchStatus"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMap2" type="com.github.wxiaoqi.security.common.entity.admin.FrontUserManager">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="userRealName" property="userRealName"/>
+        <result column="mobile" property="mobile"/>
+        <result column="email" property="email"/>
+        <result column="country" property="country"/>
+        <result column="countryCode" property="countryCode"/>
+        <result column="userType" property="userType"/>
+        <result column="isValid" property="isValid"/>
+        <result column="createTime" property="createTime"/>
+        <result column="mchStatus" property="mchStatus"/>
+    </resultMap>
+
+    <select id="selectListByExchId" resultMap="BaseResultMap">
+        SELECT DISTINCT
+        fu.id AS id,
+        fu.user_name AS userName,
+        CONCAT(  fui.first_name,   fui.real_name  ) AS userRealName,
+        fu.email AS email,
+        fu.mobile AS mobile,
+        fui.location_code AS countryCode,
+        fui.location_country AS country,
+        fui.is_valid AS isValid,
+        fu.create_time AS createTime,
+        fu.user_type AS userType,
+        m.mch_status AS mchStatus
+        FROM
+        front_user fu
+        LEFT JOIN front_user_info fui ON fui.user_id = fu.id
+        LEFT JOIN merchant m ON m.user_id = fu.id
+        <if test="cm.freezeType ==-1">
+            LEFT JOIN front_freeze_info  AS ffi  ON ffi.`user_id` =  fu.id
+        </if>
+        <if test="cm.freezeType != null and cm.freezeType != '' and cm.freezeType != -1">
+            INNER JOIN front_freeze_info  AS ffi  ON ffi.`user_id` =  fu.id
+        </if>
+        <where>
+            <if test="cm.isValid !=null and cm.isValid !='' ">
+                and fui.is_valid = #{cm.isValid}
+            </if>
+            <if test="cm.mchStatus !=null and cm.mchStatus !='' ">
+                and m.mch_status =#{cm.mchStatus}
+            </if>
+            <if test="cm.exchangeId != null and cm.exchangeId !='' ">
+                and fui.exchange_id =#{cm.exchangeId}
+            </if>
+            <if test="cm.username != null and cm.username !='' ">
+                and (fu.email like CONCAT('%',#{cm.username},'%') or fu.user_name like CONCAT('%',#{cm.username},'%') or
+                fu.mobile like CONCAT('%',#{cm.username},'%'))
+            </if>
+            <if test="cm.freezeType != null and cm.freezeType != '' and cm.freezeType == 0">
+                and ffi.`enable` = 0
+            </if>
+            <if test="cm.freezeType != null and cm.freezeType != '' and cm.freezeType >0">
+                and ffi.`enable` = 0 and  ffi.`freeze_type` = #{cm.freezeType}
+            </if>
+        </where>
+        ORDER BY fui.is_valid = 1 DESC,m.mch_status =1 DESC
+    </select>
+
+    <update id="updateUserByValid" parameterType="com.github.wxiaoqi.security.common.entity.front.FrontUserInfo">
+          update front_user_info
+          set is_valid=#{isValid},
+          dict_data=#{dictData.id}
+          where id=#{id}
+    </update>
+
+    <update id="updateMerchantByValid" parameterType="com.github.wxiaoqi.security.common.entity.merchant.Merchant">
+          update merchant
+          set mch_status=#{mchStatus},
+          dict_data=#{dictData.id}
+          where id=#{id}
+  </update>
+
+</mapper>

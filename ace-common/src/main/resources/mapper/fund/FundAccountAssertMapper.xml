@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.fund.FundAccountAssertMapper" >
+  <resultMap id="baseResultMap" type="com.github.wxiaoqi.security.common.entity.fund.FundAccountAssert" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="dc_code" property="dcCode" jdbcType="VARCHAR" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="available_amount" property="availableAmount" jdbcType="DECIMAL" />
+    <result column="freeze_amount" property="freezeAmount" jdbcType="DECIMAL" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="umac" property="umac" jdbcType="VARCHAR" />
+  </resultMap>
+
+
+  <select id="selectForUpdate"  resultMap="baseResultMap">
+			select * from fund_account_assert  where user_id=#{cm.userId} and dc_code = #{cm.dcCode} for update
+	</select>
+
+  <!--&lt;!&ndash;更新基金账户可用余额&ndash;&gt;-->
+  <!--<update id="updateAssert"  parameterType="java.util.Map">-->
+			<!--update fund_account_assert set total_amount = total_amount - #{cm.charge}, available_amount = available_amount - #{cm.amount}, freeze_amount= freeze_amount + #{cm.amount},update_time=now()-->
+			  <!--where user_id=#{cm.userId} and dc_code = #{cm.dcCode};-->
+
+   <!--</update>-->
+
+
+  <!--<update id="updateAssertDirect"  parameterType="java.util.Map">-->
+			<!--update fund_account_assert-->
+			<!--set  total_amount = #{cm.totolAmount},-->
+					<!--available_amount = #{cm.availableAmount},-->
+					<!--freeze_amount = #{cm.freezeAmount},-->
+				<!--update_time=now()-->
+		    <!--where user_id=#{cm.userId} and dc_code = #{cm.dcCode};-->
+
+   <!--</update>-->
+</mapper>

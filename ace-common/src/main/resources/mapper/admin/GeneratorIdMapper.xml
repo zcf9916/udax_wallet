@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.front.GeneratorIdMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.front.GeneratorId">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="k" property="k"/>
+        <result column="v" property="v"/>
+        <result column="incre_len" property="increLen"/>
+        <result column="VERSION" property="version"/>
+        <result column="remark_" property="remark"/>
+    </resultMap>
+
+    <select id="selectForUpdateByKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select * from generator_id where k= #{key} for update;
+	</select>
+
+
+</mapper>

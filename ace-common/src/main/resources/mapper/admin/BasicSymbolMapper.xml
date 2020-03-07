@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.BasicSymbolMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.BasicSymbol">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id"/>
+        <result column="currency_type" property="currencyType"/>
+        <result column="symbol" property="symbol"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="sort" property="sort"/>
+        <result column="crt_time" property="crtTime"/>
+        <result column="crt_name" property="crtName"/>
+        <result column="upd_time" property="updTime"/>
+        <result column="upd_name" property="updName"/>
+        <result column="is_quote" property="isQuote"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="protocol_type" property="protocolType"/>
+        <result column="is_show" property="isShow"/>
+        <result column="decimal_places" property="decimalPlaces"/>
+        <result column="exchId" property="exchId"/>
+        <association property="cfgCurrencyCharge" column="id"
+                     javaType="com.github.wxiaoqi.security.common.entity.admin.CfgCurrencyCharge"
+                     select="com.github.wxiaoqi.security.common.mapper.admin.CfgCurrencyChargeMapper.selectByBasisId"/>
+    </resultMap>
+
+    <!--查询图标和币种-->
+    <select id="selectListIcon" resultType="com.github.wxiaoqi.security.common.util.model.IconModel">
+         select symbol as symbol ,image_url as imageUrl from basic_symbol where status=#{status} and is_show=1;
+    </select>
+
+    <select id="selectBasicSymbol" resultMap="BaseResultMap">
+        SELECT * from basic_symbol where symbol =#{symbol};
+    </select>
+
+    <select id="selectBasicSrcSymbol" resultMap="BaseResultMap">
+        select * from basic_symbol
+        <where>
+            <if test="symbol !=null and symbol.size> 0">
+                and symbol in
+                <foreach collection="symbol" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <!--根据交易id 查询 可交易的币种-->
+    <select id="selectSymbolByExchId" resultMap="BaseResultMap">
+      select * from basic_symbol where id in ( select symbol_id from symbol_exch where exch_id=#{cm.exchId});
+    </select>
+
+    <select id="selectCustomPage" resultMap="BaseResultMap">
+        select * from basic_symbol
+        <where>
+            <if test="cm.symbol != null and cm.symbol !=''">
+                and symbol=#{cm.symbol}
+            </if>
+        </where>
+        ORDER BY `sort` DESC
+    </select>
+
+    <!--查询币种中间表,缓存有重复的币种信息-->
+    <select id="cacheReturn" resultMap="BaseResultMap">
+        SELECT syme.exch_id as exchId,bs.* FROM symbol_exch as syme LEFT JOIN basic_symbol as bs on syme.symbol_id=bs.id  where bs.status =1
+    </select>
+
+
+    <select id="selectSymbolCount" resultType="java.lang.Integer">
+        SELECT CONCAT(1)FROM symbol_exch as syme  LEFT JOIN basic_symbol as bs on syme.symbol_id=bs.id
+        where bs.symbol =#{symbol} and syme.exch_id =#{exchId}
+    </select>
+</mapper>

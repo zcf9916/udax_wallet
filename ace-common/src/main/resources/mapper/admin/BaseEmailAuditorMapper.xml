@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.admin.BaseEmailAuditorMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.admin.BaseEmailAuditor" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"/>
+    <result column="auditor_name" property="auditorName"/>
+    <result column="auditor_role" property="auditorRole"/>
+    <result column="email_account" property="emailAccount"/>
+    <result column="email_title" property="emailTitle"/>
+    <result column="remark_" property="remark"/>
+    <result column="crt_time" property="crtTime"/>
+    <result column="crt_name" property="crtName"/>
+    <result column="upd_time" property="updTime"/>
+    <result column="upd_name" property="updName"/>
+    <result column="email_content" property="emailContent"/>
+    <result column="white_exch_id" property="whiteExchId"/>
+    <result column="exchName" property="exchName"/>
+  </resultMap>
+
+  <select id="selectCustomPage" resultMap="BaseResultMap">
+    select bea.*,wei.white_name as exchName from base_email_auditor  as bea LEFT JOIN white_exch_info as wei on bea.white_exch_id = wei.id
+    <where>
+      <if test="cm.auditorName !=null and cm.auditorName !=''">
+        and  bea.auditor_name like CONCAT('%',#{cm.auditorName},'%')
+      </if>
+      <if test="cm.auditorRole!=null and cm .auditorRole !='' ">
+        and  bea.auditor_role =#{cm.auditorRole}
+      </if>
+      <if test="cm.whiteExchId !=null and cm.whiteExchId !=''">
+        and bea.white_exch_id =#{cm.whiteExchId}
+      </if>
+    </where>
+  </select>
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.front.RedPacketSendMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.front.RedPacketSend" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="send_type" property="sendType" jdbcType="TINYINT" />
+    <result column="num" property="num" jdbcType="INTEGER" />
+    <result column="receive_user_id" property="receiveUserId"/>
+    <result column="group_id" property="groupId" jdbcType="INTEGER" />
+    <result column="current_num" property="currentNum" jdbcType="INTEGER" />
+    <result column="current_amout" property="currentAmout" jdbcType="DECIMAL" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="return_amount" property="returnAmount" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="symbol" property="symbol" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+</mapper>

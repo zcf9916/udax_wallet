@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.front.CmsConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.front.CmsConfig" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"  />
+    <result column="cms_rate" property="cmsRate"  />
+    <result column="type" property="type"  />
+    <result column="exch_id" property="exchId"  />
+    <result column="remark" property="remark"  />
+    <result column="enable" property="enable" />
+    <result column="parent_id" property="parentId" />
+    <result column="create_time" property="createTime"  />
+    <result column="exchName" property="exchName"  />
+  </resultMap>
+
+
+  <select id="selectCustomPage" resultMap="BaseResultMap">
+    select cc.*,wei.white_name as exchName from  cms_config as cc
+    left join white_exch_info as wei on cc.exch_id =wei.id
+    <where>
+      <if test="cm.exchangeId !=null and cm.exchangeId !=''">
+        and fa.exch_id=#{cm.exchangeId}
+      </if>
+
+    </where>
+  </select>
+</mapper>

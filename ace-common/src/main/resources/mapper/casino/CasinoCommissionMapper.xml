@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.casino.CasinoCommissionMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.casino.CasinoCommission" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_no" property="orderNo" jdbcType="BIGINT" />
+    <result column="userId" property="userId" jdbcType="BIGINT" />
+    <result column="user_name" property="userName" jdbcType="CHAR" />
+    <result column="method_type" property="methodType" jdbcType="TINYINT" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="member_amount" property="memberAmount" jdbcType="DECIMAL" />
+    <result column="platform_amount" property="platformAmount" jdbcType="DECIMAL" />
+    <result column="straight_amout" property="straightAmout" jdbcType="DECIMAL" />
+    <result column="indirect_amout" property="indirectAmout" jdbcType="DECIMAL" />
+    <result column="manager_amount" property="managerAmount" jdbcType="DECIMAL" />
+    <result column="president_amount" property="presidentAmount" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="order_time" property="orderTime" jdbcType="INTEGER" />
+  </resultMap>
+</mapper>

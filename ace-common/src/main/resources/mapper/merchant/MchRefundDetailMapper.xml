@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.merchant.MchRefundDetailMapper">
+    <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.merchant.MchRefundDetail">
+        <id column="id" property="id"/>
+        <result column="wallet_order_no" property="walletOrderNo"/>
+        <result column="mch_order_no" property="mchOrderNo"/>
+        <result column="ori_wallet_order_no" property="oriWalletOrderNo"/>
+        <result column="ori_mch_order_no" property="oriMchOrderNo"/>
+        <result column="mch_no" property="mchNo"/>
+        <result column="mch_id" property="mchId"/>
+        <result column="mch_user_id" property="mchUserId"/>
+        <result column="user_id" property="userId"/>
+        <result column="symbol" property="symbol"/>
+        <result column="amount" property="amount"/>
+        <result column="refund_remark" property="refundRemark"/>
+        <result column="ip" property="ip"/>
+        <result column="refund_account_type" property="refundAccountType"/>
+        <result column="notify_url" property="notifyUrl"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="nonce_str" property="nonceStr"/>
+        <result column="create_time" property="createTime"/>
+        <result column="nonce_str" property="nonceStr" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap2" type="com.github.wxiaoqi.security.common.entity.merchant.MchRefundDetail">
+        <id column="id" property="id"/>
+        <result column="wallet_order_no" property="walletOrderNo"/>
+        <result column="mch_order_no" property="mchOrderNo"/>
+        <result column="ori_wallet_order_no" property="oriWalletOrderNo"/>
+        <result column="ori_mch_order_no" property="oriMchOrderNo"/>
+        <result column="mch_no" property="mchNo"/>
+        <result column="mch_id" property="mchId"/>
+        <result column="mch_user_id" property="mchUserId"/>
+        <result column="user_id" property="userId"/>
+        <result column="symbol" property="symbol"/>
+        <result column="amount" property="amount"/>
+        <result column="refund_remark" property="refundRemark"/>
+        <result column="ip" property="ip"/>
+        <result column="refund_account_type" property="refundAccountType"/>
+        <result column="notify_url" property="notifyUrl"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="nonce_str" property="nonceStr"/>
+        <result column="create_time" property="createTime"/>
+        <result column="nonce_str" property="nonceStr" />
+        <association property="frontUser" column="user_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                     select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+        <association property="mchFrontUser" column="mch_user_id"
+                     javaType="com.github.wxiaoqi.security.common.entity.front.FrontUser"
+                     select="com.github.wxiaoqi.security.common.mapper.front.FrontUserMapper.selectByPrimaryKey"/>
+    </resultMap>
+
+    <select id="selectCustomPage" resultMap="BaseResultMap2">
+        SELECT
+        mrd.*
+        FROM
+        mch_refund_detail AS mrd
+        LEFT JOIN front_user AS fu ON mrd.user_id = fu.id
+        LEFT JOIN front_user_info AS fui ON fui.user_id = mrd.user_id
+        <where>
+            <if test="cm.exchangeId !=null and cm.exchangeId !=''">
+                and fui.exchange_id=#{cm.exchangeId}
+            </if>
+            <if test="cm.symbol !=null and cm.symbol !='' ">
+                and mrd.symbol =#{cm.symbol}
+            </if>
+            <if test="cm.beginDate != null and cm.beginDate != ''">
+                AND mrd.create_time <![CDATA[>=]]> #{cm.beginDate}
+            </if>
+            <if test="cm.endDate != null and cm.endDate != ''">
+                AND mrd.create_time <![CDATA[<]]>#{cm.endDate}
+            </if>
+            <if test="cm.orderNo !=null and cm.orderNo !=''">
+                and ( mrd.wallet_order_no =#{cm.orderNo} or
+                      mrd.mch_order_no =#{cm.orderNo} or
+                      mrd.ori_wallet_order_no =#{cm.orderNo} or
+                      mrd.ori_mch_order_no =#{cm.orderNo} )
+            </if>
+            <if test="cm.keyword != null and cm.keyword !='' ">
+                and (fu.email like CONCAT('%',#{cm.keyword},'%')
+                or fu.user_name like CONCAT('%',#{cm.keyword},'%')
+                or fu.mobile like CONCAT('%',#{cm.keyword},'%')
+                or mrd.mch_order_no=#{cm.keyword} or mrd.mch_no=#{cm.keyword}  )
+            </if>
+        </where>
+        ORDER BY mrd.id desc
+    </select>
+</mapper>

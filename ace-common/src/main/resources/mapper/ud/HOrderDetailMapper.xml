@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.wxiaoqi.security.common.mapper.ud.HOrderDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.github.wxiaoqi.security.common.entity.ud.HOrderDetail" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id"/>
+    <result column="user_id" property="userId" />
+    <result column="order_no" property="orderNo" />
+    <result column="level_name" property="levelName" />
+    <result column="level_id" property="levelId"/>
+    <result column="lock_amount" property="lockAmount" />
+    <result column="create_time" property="createTime" />
+    <result column="purchase_time" property="purchaseTime"/>
+    <result column="symbol" property="symbol"/>
+    <result column="settle_day" property="settleDay"/>
+    <result column="current_settle_day" property="currentSettleDay"/>
+    <result column="status" property="status"/>
+    <result column="last_order_no" property="lastOrderNo"/>
+    <result column="interest" property="interest"  />
+    <result column="userName" property="userName"/>
+    <result column="profit" property="profit"/>
+    <result column="charge" property="charge"/>
+    <result column="exchName" property="exchName"/>
+  </resultMap>
+
+  <select id="selectCustomPage" resultMap="BaseResultMap">
+    SELECT
+    hod.id AS id,
+    fu.user_name AS userName,
+    hod.order_no,
+    hod.level_name,
+    hod.purchase_time,
+    hod.create_time,
+    hod.symbol,
+    hod.status,
+    hod.settle_day,
+    hcd.`profit` as charge,
+    wei.white_name as exchName,
+    (hcd.`order_profit` - hcd.`profit`) AS profit
+    FROM h_order_detail hod
+    LEFT JOIN front_user fu ON hod.user_id = fu.id
+    LEFT JOIN h_user_info hui ON hod.user_id = hui.user_id
+    LEFT JOIN white_exch_info as wei on hui.exchange_id =wei.id
+    LEFT JOIN h_commission_detail hcd ON hod.order_no = hcd.order_no AND hcd.type = 1
+    <where>
+      <if test="cm.levelId !=null and cm.levelId !='' ">
+        and hod.level_id = #{cm.levelId}
+      </if>
+      <if test="cm.exchangeId != null and cm.exchangeId !='' and cm.exchangeId != -1">
+        and hui.exchange_id = #{cm.exchangeId}
+      </if>
+      <if test="cm.username != null and cm.username !='' ">
+        and (fu.email like CONCAT('%',#{cm.username},'%')  or fu.mobile like CONCAT('%',#{cm.username},'%'))
+      </if>
+      <if test="cm.beginDate != null and cm.beginDate != ''">
+        AND hod.create_time <![CDATA[>=]]> #{cm.beginDate}
+      </if>
+      <if test="cm.endDate != null and cm.endDate != ''">
+        AND hod.create_time <![CDATA[<]]>#{cm.endDate}
+      </if>
+    </where>
+    ORDER BY hod.id DESC
+  </select>
+
+</mapper>
